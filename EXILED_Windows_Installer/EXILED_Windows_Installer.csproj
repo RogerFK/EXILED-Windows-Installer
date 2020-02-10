@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Configurations>Release</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
+    <AssemblyName>EXILED Installer for Windows</AssemblyName>
+    <RootNamespace>EXILEDWinInstaller</RootNamespace>
+    <ApplicationIcon>EXILED.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="EXILED.ico" />
+    <None Remove="images\EXILED.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="EXILED.ico" />
+    <Resource Include="images\EXILED.png" />
+  </ItemGroup>
+
+</Project>
