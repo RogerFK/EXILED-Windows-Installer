@@ -22,6 +22,8 @@
   <ItemGroup>
     <None Remove="EXILED.ico" />
     <None Remove="images\EXILED.png" />
+    <None Remove="images\focused_x.png" />
+    <None Remove="images\unfocused_x.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +33,8 @@
   <ItemGroup>
     <Resource Include="EXILED.ico" />
     <Resource Include="images\EXILED.png" />
+    <Resource Include="images\focused_x.png" />
+    <Resource Include="images\unfocused_x.png" />
   </ItemGroup>
 
 </Project>

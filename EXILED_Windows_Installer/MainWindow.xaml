@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EXILED_Windows_Installer"
         mc:Ignorable="d"
+		WindowStyle="None"
 		ResizeMode="NoResize"
-        Title="EXILED Installer for Windows" Height="422" Width="656" Background="#d63330" Foreground="#fafafa">
-	<Grid Name ="Grid" Background="#2a2a2a">
+        Title="EXILED Installer for Windows" Height="421" Width="656" Background="#2a2a2a" Foreground="#fafafa">
+	<Grid Name ="MainGrid" Background="#2a2a2a" Height="411">
 		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
-                 VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL-Server"/>
+                 VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL-Server" KeyUp="FileNameEnter"/>
 		<Button Content="Browse" Height="42" HorizontalAlignment="Left" Margin="476,250,0,0"
                 Name="BrowseXButton" VerticalAlignment="Top" Width="108" FontSize="22" Click="BrowseButton" />
 
@@ -18,18 +19,21 @@
 		HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
 		Height="76" Margin="0,304,0,0" Click="OnInstallButton" VerticalAlignment="Top" Width="206" FontSize="23"/>
 
-		<Image x:Name="image" Margin="10,43,534,261" Source="images/EXILED.png"/>
+		<Image x:Name="image" Margin="10,43,537,267" Source="images/EXILED.png"/>
 		<TextBlock x:Name="titleBlock" HorizontalAlignment="Left" Height="74" Margin="135,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" FontSize="30">
-				<Run Foreground="Red">E</Run><Run Foreground="White">XILED Installer for Windows®</Run>
+				<Run Foreground="#d63330">E</Run><Run Foreground="White">XILED Installer for Windows®</Run>
 				<LineBreak/>
 				<Run Foreground="Azure" FontSize="21">CC-BY-SA 3.0</Run>
 		</TextBlock>
 		<CheckBox x:Name="multiAdminCheckBox" Content="Download MultiAdmin" HorizontalAlignment="Left" Margin="66,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="True" Height="21"/>
+		<CheckBox x:Name="forceInstall" Content="Force re-downloading SCP:SL and EXILED" HorizontalAlignment="Left" Margin="257,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="False" Height="21" Checked="CheckForceInstallToggle" Unchecked="CheckForceInstallToggle"/>
 		<CheckBox x:Name="testingReleaseCheckbox" HorizontalAlignment="Left" Margin="66,0,0,0" VerticalAlignment="Center" FontSize="14" Foreground="AntiqueWhite" Checked="TestingWarn" Height="21">
 			<TextBlock>
 				<Run Foreground="Azure">Download testing release -</Run> <Run Foreground="red">warning:</Run> <Run Foreground="LightSlateGray"> use at your own risk.</Run>
 			</TextBlock>
 		</CheckBox>
 		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="28" Width="244" MouseUp="ClickGitHubLink"/>
+		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="16" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" Margin="0,-7,0,0" MouseLeftButtonDown="DragWindow"/>
+		<Image x:Name="cross" HorizontalAlignment="Right" Height="12" VerticalAlignment="Top" Width="17" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,-5,2,0"/>
 	</Grid>
 </Window>

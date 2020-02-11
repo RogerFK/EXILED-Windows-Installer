@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace EXILED_Windows_Installer
 {
@@ -22,8 +24,9 @@ namespace EXILED_Windows_Installer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public string InstallDir = "C:\\SCP-SL-Server\\Managed\\";
+		public string InstallDir = "C:\\SCP-SL-Server\\"; // defaults to this
 		private readonly string ErrorFile = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "error.log");
+		private bool mustDownload = false;
 		public MainWindow()
 		{
 			// The constructor is where we check if EXILED is already installed.
@@ -33,7 +36,11 @@ namespace EXILED_Windows_Installer
 
 		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
+			
+			if(mustDownload) 
+			{
 
+			}
 		}
 
 		private void BrowseButton(object sender, RoutedEventArgs e)
@@ -77,17 +84,32 @@ namespace EXILED_Windows_Installer
 			}
 		}
 		// Feel free to suggest a more correct way to do this.
-		private void RefreshInstallButton() {
-			if (Directory.Exists(System.IO.Path.Combine(InstallDir, "Managed")) && File.Exists(System.IO.Path.Combine(InstallDir, "\\SCPSL.exe")))
+		private void RefreshInstallButton() 
+		{
+			if (!Directory.Exists(System.IO.Path.Combine(InstallDir, "Managed")) && !File.Exists(System.IO.Path.Combine(InstallDir, "SCPSL.exe")))
 			{
+				forceInstall.IsEnabled = false;
+				forceInstall.Foreground = new SolidColorBrush(Color.FromArgb(255, 100, 100, 100));
+				forceInstall.Opacity = 0.5;
+				InstallButton.Content = "Download and\ninstall EXILED";
+				mustDownload = true;
+				return;
+			}
+
+			forceInstall.IsEnabled = true;
+			forceInstall.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 240, 255));
+			forceInstall.Opacity = 1;
+			if (forceInstall.IsChecked ?? false)
+			{
+				mustDownload = true;
+				InstallButton.Content = "Download and\ninstall EXILED";	
+			}
+			else 
+			{
+				mustDownload = false;
 				InstallButton.Content = "Install EXILED";
 			}
-			else
-			{
-				InstallButton.Content = "Download and\ninstall EXILED";
-			}
 		}
-
 		private void ClickGitHubLink(object sender, MouseButtonEventArgs e)
 		{
 			try
@@ -99,6 +121,45 @@ namespace EXILED_Windows_Installer
 			{
 				File.AppendAllText(ErrorFile, ex.ToString());
 			}
+		}
+
+		private void CheckForceInstallToggle(object sender, RoutedEventArgs e)
+		{
+			RefreshInstallButton();
+		}
+
+		private void FocusCross(object sender, MouseEventArgs e)
+		{
+			cross.Source = new BitmapImage(new Uri(@"\images\focused_x.png", UriKind.Relative));
+		}
+
+		private void UnfocusCross(object sender, MouseEventArgs e)
+		{
+			cross.Source = new BitmapImage(new Uri(@"\images\unfocused_x.png", UriKind.Relative));
+		}
+
+		private void ExitApp(object sender, MouseButtonEventArgs e)
+		{
+			Application.Current.Shutdown(0);
+		}
+
+		private void DragWindow(object sender, MouseButtonEventArgs e)
+		{
+			var move = sender as Rectangle;
+			var win = Window.GetWindow(move);
+			win.DragMove();
+		}
+
+		private void FileNameEnter(object sender, KeyEventArgs e)
+		{
+			if (e.Key != System.Windows.Input.Key.Enter) return;
+			switch (FileNameTextBox.Text.ToLower()) {
+				case "chiptune":
+					FileNameTextBox.Text = InstallDir;
+					MessageBox.Show("no chiptune for u");
+					return;
+			}
+			InstallDir = FileNameTextBox.Text;
 		}
 	}
 }
