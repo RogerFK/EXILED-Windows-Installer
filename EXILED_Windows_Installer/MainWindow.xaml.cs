@@ -1,10 +1,13 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
 
-namespace EXILED_Windows_Installer
+namespace EXILEDWinInstaller
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -26,21 +29,52 @@ namespace EXILED_Windows_Installer
 	{
 		public string InstallDir = "C:\\SCP-SL-Server\\"; // defaults to this
 		private readonly string ErrorFile = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "error.log");
-		private bool mustDownload = false;
+
+		private bool mustDownload;
+		private const string steamCmd = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
+		public static DownloadWindow dlWindow;
+		public static WebClient webClient;
 		public MainWindow()
 		{
 			// The constructor is where we check if EXILED is already installed.
 			InitializeComponent();
 			RefreshInstallButton();
 		}
-
-		private void OnInstallButton(object sender, RoutedEventArgs e)
+		internal static void StopAndCancel()
 		{
 			
+		}
+
+		/*private void OnInstallButton(object sender, RoutedEventArgs e)
+		{
+			MessageBox.Show("bruh");
+			dlWindow = new DownloadWindow();
+			dlWindow.Activate();
 			if(mustDownload) 
 			{
-
+				DownloadSteamCmd();
 			}
+		}*/
+		private void DownloadSteamCmd()
+		{
+			Thread thread = new Thread(() => {
+				webClient = new WebClient();
+				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressChanged);
+				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCompleted);
+				webClient.DownloadFileAsync(new Uri(steamCmd), Directory.GetCurrentDirectory() + "\\temp\\steamcmd\\");
+			});
+			thread.Start();
+		}
+		void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+		{
+			double bytesIn = double.Parse(e.BytesReceived.ToString());
+			double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+			double percentage = bytesIn / totalBytes * 100;
+			dlWindow.UpdateProgress(percentage);
+		}
+		void DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+		{
+			
 		}
 
 		private void BrowseButton(object sender, RoutedEventArgs e)
@@ -102,7 +136,7 @@ namespace EXILED_Windows_Installer
 			if (forceInstall.IsChecked ?? false)
 			{
 				mustDownload = true;
-				InstallButton.Content = "Download and\ninstall EXILED";	
+				InstallButton.Content = "Download and\ninstall EXILED";
 			}
 			else 
 			{
@@ -160,6 +194,11 @@ namespace EXILED_Windows_Installer
 					return;
 			}
 			InstallDir = FileNameTextBox.Text;
+		}
+
+		private void InstallButton_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

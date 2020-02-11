@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace EXILED_Windows_Installer
+namespace EXILEDWinInstaller
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

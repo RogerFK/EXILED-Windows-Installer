@@ -1,0 +1,17 @@
+﻿<Window x:Class="EXILEDWinInstaller.DownloadWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EXILEDWinInstaller"
+        mc:Ignorable="d"
+        Title="Downloading..." Height="186" Width="492" Background="#3F3F3F"
+		WindowStyle="None"
+		ResizeMode="NoResize">
+
+	<Grid>
+
+		<ProgressBar x:Name="downloadBar" Margin="50,102,50,45"/>
+		<Button x:Name="button" Content="Button" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
+	</Grid>
+</Window>
