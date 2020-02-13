@@ -24,7 +24,7 @@ namespace EXILED
 		{
 			Major = 1,
 			Minor = 7,
-			Patch = 7
+			Patch = 13
 		};
 		
 		//The below variables are used to disable the patch for any particular event, allowing devs to implement events themselves.
@@ -39,6 +39,8 @@ namespace EXILED
 		public static bool TriggerTeslaPatchDisable;
 		public static bool UseMedicalPatchDisable;
 		public static bool WaitingForPlayersPatchDisable;
+        public static bool PlayerSpawnEventPatchDisable;
+        public static bool SetRandomRolesPatchDisable;
 		public static bool WarheadLockPatchDisable;
 		public static bool GrenadeThrownPatchDisable;
 		public static bool NineFourteenMachinePatchDisable;
@@ -52,37 +54,44 @@ namespace EXILED
 		public static bool DoorInteractionEventPatchDisable;
 		public static bool PlayerJoinEventPatchDisable;
 		public static bool PlayerLeaveEventPatchDisable;
+        public static bool StartItemsEventPatchDisable;
 		public static bool DropItemEventPatchDisable;
 		public static bool PickupItemEventPatchDisable;
 		public static bool Generator079EventPatchDisable;
 		public static bool HandcuffEventPatchDisable;
 		public static bool Scp106ContainEventDisable;
 		public static bool SetGroupEventDisable;
+		public static bool FemurEnterEventDisable;
 
 		private EventHandlers handlers;
 		//The below variable is used to incriment the name of the harmony instance, otherwise harmony will not work upon a plugin reload.
 		private static int patchFixer;
+		public static bool Scp173Fix;
+		public static bool Scp096Fix;
+		public static Dictionary<ReferenceHub, List<int>> TargetGhost = new Dictionary<ReferenceHub, List<int>>();
 
 		//The below method gets called when the plugin is enabled by the EXILED loader.
 		public override void OnEnable()
 		{
 			Log.Info("Enabled.");
-			Log.Info("Checking version status..");
-			 if (IsUpdateAvailible())
-			 {
-				 Log.Info("There is an new version of EXILED available.");
-			 	if (Config.GetBool("exiled_auto_update", true))
-			 	{
-			 		AutoUpdate();
-			    }
-			 }
+			Log.Info($"Checking version status..");
+			Log.Info($"ServerMod - Version {Version.Major}.{Version.Minor}.{Version.Patch}-EXILED");
+			if (IsUpdateAvailible())
+			{
+				Log.Info("There is an new version of EXILED available.");
+				if (Config.GetBool("exiled_auto_update", true))
+				{
+					AutoUpdate();
+				}
+			}
 
-			 Log.Debug("Adding Event Handlers..");
+			Scp173Fix = Config.GetBool("exiled_tut_fix173", true);
+			Scp096Fix = Config.GetBool("exiled_tut_fix096", true);
+			Log.Debug("Adding Event Handlers..");
 			handlers = new EventHandlers(this);
 			Events.WaitingForPlayersEvent += handlers.OnWaitingForPlayers;
 			Events.RoundStartEvent += handlers.OnRoundStart;
 			Events.RemoteAdminCommandEvent += ReloadCommandHandler.CommandHandler;
-			Events.SetClassEvent += handlers.OnSetClass;
 			Events.PlayerLeaveEvent += handlers.OnPlayerLeave;
 			
 			Log.Debug("Patching..");

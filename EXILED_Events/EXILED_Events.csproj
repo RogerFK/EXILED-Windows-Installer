@@ -59,11 +59,11 @@
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\References\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\References\Assembly-CSharp_publicized.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\References\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\References\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\References\BouncyCastle.Crypto.dll</HintPath>
@@ -208,6 +208,7 @@
     <Compile Include="Patches\DecontaminationEvent.cs" />
     <Compile Include="Patches\DoorInteractionEvent.cs" />
     <Compile Include="Patches\DropItemEvent.cs" />
+    <Compile Include="Patches\FemurEnterEvent.cs" />
     <Compile Include="Patches\Generator079Events.cs" />
     <Compile Include="Patches\GhostmodePatch.cs" />
     <Compile Include="Patches\GrenadeThrownEvent.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="Patches\PlayerHurtEvent.cs" />
     <Compile Include="Patches\PlayerJoinEvent.cs" />
     <Compile Include="Patches\PlayerLeaveEvent.cs" />
+    <Compile Include="Patches\PlayerSpawnEvent.cs" />
     <Compile Include="Patches\PreAuthEventPatch.cs" />
     <Compile Include="Patches\GameConsoleQueryOverride.cs" />
     <Compile Include="Patches\RACommandPatch.cs" />
@@ -237,11 +239,14 @@
     <Compile Include="Patches\ServerNamePatch.cs" />
     <Compile Include="Patches\SetClassEvent.cs" />
     <Compile Include="Patches\SetGroupEvent.cs" />
+    <Compile Include="Patches\SetRandomRolesPatch.cs" />
     <Compile Include="Patches\SmortClassPickerFix.cs" />
+    <Compile Include="Patches\StartItemsEvent.cs" />
     <Compile Include="Patches\TriggerTeslaEvent.cs" />
     <Compile Include="Patches\UseMedicalEvent.cs" />
     <Compile Include="Patches\WaitingForPlayersEvent.cs" />
     <Compile Include="Patches\WarheadCmdEvent.cs" />
+    <Compile Include="Patches\WarheadDetonationPatch.cs" />
     <Compile Include="Patches\WeaponManagerOverride.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

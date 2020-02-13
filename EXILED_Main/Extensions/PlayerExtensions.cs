@@ -11,13 +11,16 @@ namespace EXILED.Extensions
         public static Dictionary<int, ReferenceHub> IdHubs = new Dictionary<int, ReferenceHub>();
         public static Dictionary<string, ReferenceHub> StrHubs = new Dictionary<string, ReferenceHub>();
         
-        //Gets a list of all current player ReferenceHubs.
-        public static IEnumerable<ReferenceHub> GetHubs() => ReferenceHub.Hubs.Values.ToArray();
+        /// <summary>
+        /// Returns an IEnumerable of ReferenceHubs for all players on the server.
+        /// </summary>
+        /// <returns>IEnumerable(ReferenceHub)</returns>
+        public static IEnumerable<ReferenceHub> GetHubs() => ReferenceHub.Hubs.Values;
 
         /// <summary>
         /// Gets the position of a <see cref="ReferenceHub">player</see>
         /// </summary>
-        public static void GetPosition(this ReferenceHub rh) => rh.plyMovementSync.GetRealPosition();
+        public static Vector3 GetPosition(this ReferenceHub rh) => rh.plyMovementSync.GetRealPosition();
         /// <summary>
         /// Gets the rotations from a <see cref="ReferenceHub">player</see>
         /// </summary>
@@ -62,7 +65,7 @@ namespace EXILED.Extensions
         public static void SetRank(this ReferenceHub rh, string name, string color, bool show)
         {
             // Developer note: I bet I just needed to use the show once. But hey, better be safe than sorry.
-            var ug = new UserGroup()
+            UserGroup ug = new UserGroup()
             {
                 BadgeColor = color,
                 BadgeText = name,
@@ -79,10 +82,8 @@ namespace EXILED.Extensions
         /// <summary>
         /// Gets the nickname of a <see cref="ReferenceHub">player</see>
         /// </summary>
-        public static string GetNickname(this ReferenceHub rh)
-        {
-            return rh.nicknameSync.Network_myNickSync;
-        }
+        public static string GetNickname(this ReferenceHub rh) => rh.nicknameSync.Network_myNickSync;
+
         /// <summary>
         /// Sets the nickname of a <see cref="ReferenceHub"/> to <paramref name="name"/>
         /// </summary>
@@ -113,16 +114,21 @@ namespace EXILED.Extensions
         /// Sends a message to the RA console of a <paramref name="sender"/>. <paramref name="pluginName"/> will be the name of your <see cref="Assembly"/>
         /// </summary>
         public static void RAMessage(this CommandSender sender, string message, bool success = true, string pluginName = null) =>
-            sender.RaReply((pluginName ?? Assembly.GetCallingAssembly().FullName) + "#" + message, success, true, string.Empty);
+            sender.RaReply((pluginName ?? Assembly.GetCallingAssembly().GetName().Name) + "#" + message, success, true, string.Empty);
 
         /// <summary>
         /// A simple broadcast to a player. Doesn't get logged to the console.
         /// </summary>
         public static void Broadcast(this ReferenceHub rh, uint time, string message) => rh.GetComponent<Broadcast>().TargetAddElement(rh.scp079PlayerScript.connectionToClient, message, time, false);
         
-        public static Team GetTeam(RoleType role)
+        /// <summary>
+        /// Gets the team a player belongs to.
+        /// </summary>
+        /// <param name="hub">Player</param>
+        /// <returns>Team</returns>
+        public static Team GetTeam(this ReferenceHub hub)
         {
-            switch (role)
+	        switch (hub.characterClassManager.CurClass)
             {
                 case RoleType.ChaosInsurgency:
                     return Team.CHI;
@@ -154,9 +160,19 @@ namespace EXILED.Extensions
             }
         }
         
-        public static ReferenceHub GetPlayer(GameObject obj) => ReferenceHub.GetHub(obj);
-		
-		public static ReferenceHub GetPlayer(int pId)
+        /// <summary>
+        /// Gets the Reference hub belonging to the GameObject, if any.
+        /// </summary>
+        /// <param name="obj">object</param>
+        /// <returns>ReferenceHub or null</returns>
+        public static ReferenceHub GetPlayer(this GameObject obj) => ReferenceHub.GetHub(obj);
+
+        /// <summary>
+        /// Gets the reference hub belonging to the player with the specified PlayerID
+        /// </summary>
+        /// <param name="pId">PlayerID</param>
+        /// <returns>ReferenceHub or null</returns>
+        public static ReferenceHub GetPlayer(int pId)
 		{
 			if (IdHubs.ContainsKey(pId))
 				return IdHubs[pId];
@@ -170,7 +186,11 @@ namespace EXILED.Extensions
 			return null;
 		}
 
-		//Gets the reference hub of a player based on a string that can be either their playerID, userID, or name, checking in that order. Returns null if no match is found.
+		/// <summary>
+		/// Gets the reference hub belonging to the player who's name most closely matches the string given, if any.
+		/// </summary>
+		/// <param name="args">Player's Name</param>
+		/// <returns>ReferenceHub or null</returns>
 		public static ReferenceHub GetPlayer(string args)
 		{
 			try
