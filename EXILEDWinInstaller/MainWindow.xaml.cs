@@ -38,43 +38,22 @@ namespace EXILEDWinInstaller
 		{
 			// The constructor is where we check if EXILED is already installed.
 			InitializeComponent();
+			InstallButton.Click += OnInstallButton;
 			RefreshInstallButton();
 		}
 		internal static void StopAndCancel()
 		{
-			
+			System.Windows.Application.Current.Shutdown();
 		}
 
-		/*private void OnInstallButton(object sender, RoutedEventArgs e)
+		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
-			MessageBox.Show("bruh");
 			dlWindow = new DownloadWindow();
-			dlWindow.Activate();
+			dlWindow.Show();
 			if(mustDownload) 
 			{
-				DownloadSteamCmd();
+				dlWindow.Download(steamCmd);
 			}
-		}*/
-		private void DownloadSteamCmd()
-		{
-			Thread thread = new Thread(() => {
-				webClient = new WebClient();
-				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressChanged);
-				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCompleted);
-				webClient.DownloadFileAsync(new Uri(steamCmd), Directory.GetCurrentDirectory() + "\\temp\\steamcmd\\");
-			});
-			thread.Start();
-		}
-		void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-		{
-			double bytesIn = double.Parse(e.BytesReceived.ToString());
-			double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
-			double percentage = bytesIn / totalBytes * 100;
-			dlWindow.UpdateProgress(percentage);
-		}
-		void DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-		{
-			
 		}
 
 		private void BrowseButton(object sender, RoutedEventArgs e)
@@ -196,9 +175,5 @@ namespace EXILEDWinInstaller
 			InstallDir = FileNameTextBox.Text;
 		}
 
-		private void InstallButton_Click(object sender, RoutedEventArgs e)
-		{
-
-		}
 	}
 }

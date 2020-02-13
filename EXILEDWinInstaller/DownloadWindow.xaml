@@ -10,8 +10,10 @@
 		ResizeMode="NoResize">
 
 	<Grid>
-
-		<ProgressBar x:Name="downloadBar" Margin="50,102,50,45"/>
-		<Button x:Name="button" Content="Button" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
+		<Rectangle MouseDown="DragWindow"/>
+		<ProgressBar x:Name="downloadBar" Margin="50,92,50,55"/>
+		<!-- Sorry for the naming btw -->
+        <Button x:Name="button" Content="Cancel" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
+		<TextBlock x:Name="dlTextBlock" HorizontalAlignment="Center" Height="38" Margin="110,30,110,0" TextWrapping="Wrap" Text="Downloading..." VerticalAlignment="Top" TextAlignment="Center" FontWeight="DemiBold" Foreground="IndianRed" Width="273"/>
 	</Grid>
 </Window>

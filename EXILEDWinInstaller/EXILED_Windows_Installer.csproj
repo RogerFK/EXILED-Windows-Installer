@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetVersion>v4.8</TargetVersion>
     <UseWPF>true</UseWPF>
     <Configurations>Release</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyName>EXILED Installer for Windows</AssemblyName>
     <RootNamespace>EXILEDWinInstaller</RootNamespace>
     <ApplicationIcon>EXILED.ico</ApplicationIcon>
+    <StartupObject />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
