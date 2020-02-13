@@ -26,11 +26,10 @@ namespace EXILEDWinInstaller
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public string InstallDir = "C:\\SCP-SL-Server\\"; // defaults to this
+		internal static string InstallDir = "C:\\SCP-SL-Server\\"; // defaults to this
 		private readonly string ErrorFile = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "error.log");
 
 		private bool mustDownload;
-		private const string steamCmd = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
 		public static DownloadWindow dlWindow;
 		public static WebClient webClient;
 		public MainWindow()
@@ -39,7 +38,6 @@ namespace EXILEDWinInstaller
 			InitializeComponent();
 			InstallButton.Click += OnInstallButton;
 			RefreshInstallButton();
-			var hey = Window.GetWindow(this);
 		}
 		internal static void StopAndCancel()
 		{
@@ -52,7 +50,11 @@ namespace EXILEDWinInstaller
 			dlWindow.Show();
 			if(mustDownload) 
 			{
-				dlWindow.Download(steamCmd);
+				dlWindow.DownloadGame();
+			}
+			else 
+			{
+				dlWindow.DownloadExiled();
 			}
 		}
 
@@ -182,6 +184,7 @@ namespace EXILEDWinInstaller
 					MessageBox.Show("no chiptune for u");
 					return;
 			}
+			// Yeah, this installer only works locally. Use EXILED_Installer.exe if you can't use a GUI instead.
 			if (!Uri.IsWellFormedUriString(FileNameTextBox.Text, UriKind.Absolute) && !FileNameTextBox.Text.StartsWith("http") && !FileNameTextBox.Text.StartsWith("ftp"))
 			{
 				MessageBox.Show("Invalid path. Please introduce a valid path (for example: C:\\SCPSL\\", "Error");

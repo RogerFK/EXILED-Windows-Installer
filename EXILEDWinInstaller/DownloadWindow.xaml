@@ -14,9 +14,12 @@
 		<Rectangle MouseDown="DragWindow"/>
 		<ProgressBar x:Name="downloadBar" Margin="50,100,50,54.6"/>
 		<Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
-		<TextBlock x:Name="dlTextBlock" HorizontalAlignment="Center"
-		Height="77" Margin="78,10,85,98.6" TextWrapping="Wrap" Text="Default download message" VerticalAlignment="Center"
+		<TextBlock x:Name="dlTitleBlock" HorizontalAlignment="Center"
+		Height="32" Margin="82,10,82,144" TextWrapping="Wrap" Text="Downloading something cool" VerticalAlignment="Center"
 		TextAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" Width="329" FontSize="21"/>
-		<Image x:Name="image" Source="images/EXILED.png" HorizontalAlignment="Left" Height="68" Margin="10,10,0,0" VerticalAlignment="Top" Width="55"/>
+		<Image x:Name="image" Source="images/EXILED.png" HorizontalAlignment="Left" Height="52" Margin="10,10,0,0" VerticalAlignment="Top" Width="44"/>
+		<TextBlock x:Name="dlProgressInfo" HorizontalAlignment="Center"
+		Height="47" Margin="80,42,80,97" TextWrapping="Wrap" Text="Progress: 148KB of 420KB" VerticalAlignment="Center"
+		TextAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" Width="367" FontSize="18"/>
 	</Grid>
 </Window>
