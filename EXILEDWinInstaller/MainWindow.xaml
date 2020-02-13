@@ -7,6 +7,7 @@
         mc:Ignorable="d"
 		WindowStyle="None"
 		ResizeMode="NoResize"
+		WindowStartupLocation="CenterOwner"
         Title="EXILED Installer for Windows" Height="421" Width="656" Background="#2a2a2a" Foreground="#fafafa">
 	<Grid Name ="MainGrid" Background="#2a2a2a" Height="411">
 		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
@@ -24,15 +25,23 @@
 				<LineBreak/>
 				<Run Foreground="Azure" FontSize="21">CC-BY-SA 3.0</Run>
 		</TextBlock>
-		<CheckBox x:Name="multiAdminCheckBox" Content="Download MultiAdmin" HorizontalAlignment="Left" Margin="66,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="True" Height="21"/>
+		<CheckBox x:Name="multiAdminCheckBox" 
+		Content="Download MultiAdmin" HorizontalAlignment="Left" Margin="66,219,0,0" VerticalAlignment="Top" 
+		FontSize="14" Foreground="Azure" IsChecked="True" Height="21">
+			<CheckBox.ToolTip>
+				MultiAdmin makes the server console cleaner and saves logs which will surely be useful.
+				We recommend it over LocalAdmin.exe, but this is not mandatory.
+			</CheckBox.ToolTip>
+		</CheckBox>
 		<CheckBox x:Name="forceInstall" Content="Force re-downloading SCP:SL and EXILED" HorizontalAlignment="Left" Margin="257,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="False" Height="21" Checked="CheckForceInstallToggle" Unchecked="CheckForceInstallToggle"/>
 		<CheckBox x:Name="testingReleaseCheckbox" HorizontalAlignment="Left" Margin="66,0,0,0" VerticalAlignment="Center" FontSize="14" Foreground="AntiqueWhite" Checked="TestingWarn" Height="21">
 			<TextBlock>
 				<Run Foreground="Azure">Download testing release -</Run> <Run Foreground="red">warning:</Run> <Run Foreground="LightSlateGray"> use at your own risk.</Run>
 			</TextBlock>
 		</CheckBox>
-		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="28" Width="244" MouseUp="ClickGitHubLink"/>
+		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="18" Width="244" MouseUp="ClickGitHubLink"/>
 		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="16" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" Margin="0,-7,0,0" MouseLeftButtonDown="DragWindow"/>
 		<Image x:Name="cross" HorizontalAlignment="Right" Height="12" VerticalAlignment="Top" Width="17" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,-5,2,0"/>
+		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,135,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
 	</Grid>
 </Window>

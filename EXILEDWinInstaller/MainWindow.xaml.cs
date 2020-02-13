@@ -40,6 +40,7 @@ namespace EXILEDWinInstaller
 			InitializeComponent();
 			InstallButton.Click += OnInstallButton;
 			RefreshInstallButton();
+			var hey = Window.GetWindow(this);
 		}
 		internal static void StopAndCancel()
 		{
@@ -127,7 +128,6 @@ namespace EXILEDWinInstaller
 		{
 			try
 			{
-				// lol https://github.com/dotnet/runtime/issues/28005
 				System.Diagnostics.Process.Start("explorer.exe", @"https://www.github.com/galaxy119/EXILED");
 			}
 			catch (Exception ex)
@@ -172,8 +172,18 @@ namespace EXILEDWinInstaller
 					MessageBox.Show("no chiptune for u");
 					return;
 			}
+			if (!Uri.IsWellFormedUriString(FileNameTextBox.Text, UriKind.Absolute) && !FileNameTextBox.Text.StartsWith("http") && !FileNameTextBox.Text.StartsWith("ftp"))
+			{
+				MessageBox.Show("Invalid path. Please introduce a valid path (for example: C:\\SCPSL\\", "Error");
+				FileNameTextBox.Text = InstallDir;
+				return;
+			}
 			InstallDir = FileNameTextBox.Text;
 		}
 
+		private void ClickDiscordLink(object sender, MouseButtonEventArgs e)
+		{
+			System.Diagnostics.Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg");
+		}
 	}
 }

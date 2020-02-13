@@ -7,13 +7,16 @@
         mc:Ignorable="d"
         Title="Downloading..." Height="186" Width="492" Background="#3F3F3F"
 		WindowStyle="None"
+		WindowStartupLocation="CenterOwner"
 		ResizeMode="NoResize">
 
 	<Grid>
 		<Rectangle MouseDown="DragWindow"/>
-		<ProgressBar x:Name="downloadBar" Margin="50,92,50,55"/>
-		<!-- Sorry for the naming btw -->
-        <Button x:Name="button" Content="Cancel" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
-		<TextBlock x:Name="dlTextBlock" HorizontalAlignment="Center" Height="38" Margin="110,30,110,0" TextWrapping="Wrap" Text="Downloading..." VerticalAlignment="Top" TextAlignment="Center" FontWeight="DemiBold" Foreground="IndianRed" Width="273"/>
+		<ProgressBar x:Name="downloadBar" Margin="50,100,50,54.6"/>
+		<Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Height="24" Width="51" Click="CancelClick"/>
+		<TextBlock x:Name="dlTextBlock" HorizontalAlignment="Center"
+		Height="77" Margin="78,10,85,98.6" TextWrapping="Wrap" Text="Default download message" VerticalAlignment="Center"
+		TextAlignment="Center" FontWeight="DemiBold" Foreground="WhiteSmoke" Width="329" FontSize="21"/>
+		<Image x:Name="image" Source="images/EXILED.png" HorizontalAlignment="Left" Height="68" Margin="10,10,0,0" VerticalAlignment="Top" Width="55"/>
 	</Grid>
 </Window>

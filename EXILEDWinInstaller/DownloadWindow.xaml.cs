@@ -63,7 +63,7 @@ namespace EXILEDWinInstaller
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show("Error (Notify the developer with a screenshot)\n---------------------\n " + ex);
+					MessageBox.Show("Error (Notify the developer with a screenshot)\n---------------------\n " + ex, "Error");
 				}
 			}));
 			webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCompleted);
