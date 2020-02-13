@@ -1,5 +1,4 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -59,7 +58,7 @@ namespace EXILEDWinInstaller
 
 		private void BrowseButton(object sender, RoutedEventArgs e)
 		{
-			var FolderPicker = new CommonOpenFileDialog
+			/*var FolderPicker = new CommonOpenFileDialog
 			{
 				Title = "Pick a folder to install the server to...",
 				IsFolderPicker = true,
@@ -79,6 +78,17 @@ namespace EXILEDWinInstaller
 			{
 				FileNameTextBox.Text = InstallDir = FolderPicker.FileName;
 				RefreshInstallButton();
+			}*/
+			using (var fldrDlg = new System.Windows.Forms.FolderBrowserDialog())
+			{
+				//fldrDlg.Filter = "Png Files (*.png)|*.png";
+				//fldrDlg.Filter = "Excel Files (*.xls, *.xlsx)|*.xls;*.xlsx|CSV Files (*.csv)|*.csv"
+
+				if (fldrDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					FileNameTextBox.Text = InstallDir = fldrDlg.SelectedPath;
+					RefreshInstallButton();
+				}
 			}
 		}
 
