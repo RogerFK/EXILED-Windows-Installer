@@ -16,6 +16,7 @@ using System.IO;
 using Path = System.IO.Path;
 using System.IO.Compression;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace EXILEDWinInstaller
 {
@@ -70,24 +71,38 @@ namespace EXILEDWinInstaller
 				}
 			}));
 		}
-		void SteamCmdDownloaded(object sender, AsyncCompletedEventArgs e)
+		async void SteamCmdDownloaded(object sender, AsyncCompletedEventArgs e)
 		{
 			dlTitleBlock.Text = "Extracting steamcmd...";
+			dlProgressInfo.Text = "This may take a while... Please, don't close the SteamCMD windows.";
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
-			Dispatcher.BeginInvoke(new ThreadStart(() => 
+			await Task.Run(() => ZipFile.ExtractToDirectory(TmpDirectory + "steamcmd.zip", TmpDirectory));
+			dlTitleBlock.Text = "Updating SteamCMD...";
+			await Task.Run(() =>
 			{
-				ZipFile.ExtractToDirectory(TmpDirectory + "steamcmd.zip", TmpDirectory);
-				dlTitleBlock.Text = "Installing SCP:SL to " + MainWindow.InstallDir;
 				Process process = Process.Start(TmpDirectory + "steamcmd.exe", $"+quit"); //+login anonymous +force_install_dir {MainWindow.InstallDir} +app_update 996560 
 				process.WaitForExit();
-				dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + MainWindow.InstallDir;
-			}));
+			});
+			dlTitleBlock.Text = "Installing SCP:SL to " + MainWindow.InstallDir;
+			if (!Directory.Exists(MainWindow.InstallDir))
+			{
+				Directory.CreateDirectory(MainWindow.InstallDir);
+			}
+			await Task.Run(() =>
+			{
+				Process process = Process.Start(TmpDirectory + "steamcmd.exe", $"+login anonymous +force_install_dir {MainWindow.InstallDir} +app_update 996560 +quit");
+				process.WaitForExit();
+			});
+			
+			dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + MainWindow.InstallDir;
+			DownloadExiled();
 		}
 
 		internal void DownloadExiled()
 		{
-			throw new NotImplementedException();
+			MessageBox.Show(new NotImplementedException().ToString());
+			System.Windows.Application.Current.Shutdown();
 		}
 
 		void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -97,13 +112,6 @@ namespace EXILEDWinInstaller
 			double percentage = bytesIn / totalBytes * 100;
 			dlProgressInfo.Text = "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
 			downloadBar.Value = percentage;
-		}
-		void DownloadSL() 
-		{
-			if(!Directory.Exists(MainWindow.InstallDir))
-			{
-				Directory.CreateDirectory(MainWindow.InstallDir);
-			}
 		}
 	}
 }

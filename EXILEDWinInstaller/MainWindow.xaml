@@ -9,7 +9,7 @@
 		ResizeMode="NoResize"
 		WindowStartupLocation="CenterOwner"
         Title="EXILED Installer for Windows" Height="421" Width="656" Background="#2a2a2a" Foreground="#fafafa">
-	<Grid Name ="MainGrid" Background="#2a2a2a" Height="411">
+	<Grid Name ="MainGrid" Background="#2a2a2a" Margin="0,0,0,5">
 		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
                  VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL-Server" KeyUp="FileNameEnter"/>
 		<Button Content="Browse" Height="42" HorizontalAlignment="Left" Margin="476,250,0,0"
@@ -40,8 +40,8 @@
 			</TextBlock>
 		</CheckBox>
 		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="18" Width="244" MouseUp="ClickGitHubLink"/>
-		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="16" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" Margin="0,-7,0,0" MouseLeftButtonDown="DragWindow"/>
-		<Image x:Name="cross" HorizontalAlignment="Right" Height="12" VerticalAlignment="Top" Width="17" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,-5,2,0"/>
+		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="9" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" MouseLeftButtonDown="DragWindow"/>
+		<Image x:Name="cross" HorizontalAlignment="Right" Height="7" VerticalAlignment="Top" Width="10" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,1,1,0"/>
 		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,135,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
 	</Grid>
 </Window>
