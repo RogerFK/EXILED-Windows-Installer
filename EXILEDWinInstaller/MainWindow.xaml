@@ -12,14 +12,19 @@
 	<Grid Name ="MainGrid" Background="#2a2a2a" Margin="0,0,0,5">
 		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
                  VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL-Server" KeyUp="FileNameEnter"/>
-		<Button Content="Browse" Height="42" HorizontalAlignment="Left" Margin="476,250,0,0"
-                Name="BrowseXButton" VerticalAlignment="Top" Width="108" FontSize="22" Click="BrowseButton" />
-		<Button x:Name="InstallButton"
-		HorizontalAlignment="Center" Content="Install EXILED" 
+		<Button Content="Browse" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a" Foreground="Azure"
+				Height="32" HorizontalAlignment="Left" Margin="475,255,0,0"
+				Name="BrowseXButton" VerticalAlignment="Top" Width="87" FontSize="20" Click="BrowseButton" />
+		<Button x:Name="InstallButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a"
+		HorizontalAlignment="Center"
 		HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-		Height="76" Margin="0,304,0,0" VerticalAlignment="Top" Width="206" FontSize="23"/>
+		Height="70" Margin="180,0,180,30" VerticalAlignment="Bottom" Width="244" FontSize="23">
+			<TextBlock x:Name="InstallButtonText" TextWrapping="WrapWithOverflow" TextAlignment="Center" VerticalAlignment="Center">
+			<Run Foreground="#E5E5E5">Install</Run> <Run Foreground="#d63330">E</Run><Run Foreground="#FFF">XILED</Run>
+			</TextBlock>
+		</Button>
 
-		<Image x:Name="image" Margin="10,43,537,267" Source="images/EXILED.png"/>
+		<Image x:Name="image" Margin="10,43,537,267" Source="images/EXILED.png" MouseDown="ClickGitHubLink"/>
 		<TextBlock x:Name="titleBlock" HorizontalAlignment="Left" Height="74" Margin="135,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" FontSize="30">
 				<Run Foreground="#d63330">E</Run><Run Foreground="White">XILED Installer for Windows®</Run>
 				<LineBreak/>
@@ -33,15 +38,16 @@
 				We recommend it over LocalAdmin.exe, but this is not mandatory.
 			</CheckBox.ToolTip>
 		</CheckBox>
-		<CheckBox x:Name="forceInstall" Content="Force re-downloading SCP:SL and EXILED" HorizontalAlignment="Left" Margin="257,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="False" Height="21" Checked="CheckForceInstallToggle" Unchecked="CheckForceInstallToggle"/>
+		<CheckBox x:Name="forceInstall" Content="Update SCP:SL Dedicated Server" HorizontalAlignment="Left" Margin="282,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" IsChecked="False" Height="21" Checked="CheckForceInstallToggle" Unchecked="CheckForceInstallToggle" Width="224"/>
 		<CheckBox x:Name="testingReleaseCheckbox" HorizontalAlignment="Left" Margin="66,0,0,0" VerticalAlignment="Center" FontSize="14" Foreground="AntiqueWhite" Checked="TestingWarn" Height="21">
 			<TextBlock>
 				<Run Foreground="Azure">Download testing release -</Run> <Run Foreground="red">warning:</Run> <Run Foreground="LightSlateGray"> use at your own risk.</Run>
 			</TextBlock>
 		</CheckBox>
-		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="18" Width="244" MouseUp="ClickGitHubLink"/>
+		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,120,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" Cursor="Hand" VerticalAlignment="Top" Height="18" Width="244" MouseUp="ClickGitHubLink"/>
 		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="15" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" MouseLeftButtonDown="DragWindow"/>
 		<Image x:Name="cross" HorizontalAlignment="Right" Height="13" VerticalAlignment="Top" Width="19" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,1,1,0"/>
-		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,135,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
+		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,140,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Cursor="Hand" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
+		<TextBlock x:Name="rentAServer" HorizontalAlignment="Left" Margin="342,397,0,0" Text="Rent your own server in EXILED.host (starting at $4.99/mo)" TextWrapping="Wrap" Foreground="MediumPurple" TextDecorations="Underline" Cursor="Hand" VerticalAlignment="Top" Height="19" Width="313" MouseUp="RentServer"/>
 	</Grid>
 </Window>

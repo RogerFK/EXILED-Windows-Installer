@@ -183,13 +183,65 @@ namespace EXILEDWinInstaller
 					Application.Current.Shutdown();
 				}
 			});
+			if (MainWindow.MultiAdmin)
+			{
+				DownloadMultiAdmin();
+			}
+			else Success();
+		}
+		internal void DownloadMultiAdmin()
+		{
+			dlTitleBlock.Text = "Downloading MultiAdmin...";
+			WebClient webClient = new WebClient();
+			Dispatcher.BeginInvoke(new ThreadStart(() =>
+			{
+				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(MultiAdminDownloaded);
+
+				if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
+				{
+					Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
+				}
+				try
+				{
+					// taken from EXILED_Installer	
+					HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://github.com/Grover-c13/MultiAdmin/releases/latest");
+					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+					Stream stream = response.GetResponseStream();
+					StreamReader reader = new StreamReader(stream);
+					string read = reader.ReadToEnd();
+					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+					string thing = readArray.FirstOrDefault(s => s.Contains("MultiAdmin.exe"));
+					string sub = Between(thing, "Grover-c13/MultiAdmin/releases/download/", "/MultiAdmin.exe");
+					string path = "https://"+ $"github.com/Grover-c13/MultiAdmin/releases/download/{sub}/MultiAdmin.exe";
+					if (File.Exists(MainWindow.InstallDir + "MultiAdmin.exe")) File.Delete(MainWindow.InstallDir + "MultiAdmin.exe");
+					
+					webClient.DownloadFileAsync(new Uri(path), MainWindow.InstallDir + "MultiAdmin.exe");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("MultiAdmin download error (Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
+					Application.Current.Shutdown(1);
+				}
+			}));
+		}
+
+		void MultiAdminDownloaded(object sender, AsyncCompletedEventArgs e)
+		{
+			Success();
+		}
+
+		private async void Success()
+		{
 			dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + MainWindow.InstallDir;
 			downloadBar.Value = 100;
+			downloadBar.IsIndeterminate = false;
 			dlProgressInfo.Text = "Closing this window in a few seconds...";
-			await Task.Run(() => 
+			await Task.Run(() =>
 			{
 				Thread.Sleep(3000);
-				MainWindow.Success();
+				MainWindow.Instance.Success();
 				Application.Current.Shutdown(0);
 			});
 		}
