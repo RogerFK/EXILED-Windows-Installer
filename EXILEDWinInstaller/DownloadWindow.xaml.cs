@@ -17,6 +17,7 @@ using Path = System.IO.Path;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace EXILEDWinInstaller
 {
@@ -26,18 +27,21 @@ namespace EXILEDWinInstaller
 	public partial class DownloadWindow : Window
 	{
 		private const string steamCmd = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
+		private const string exiledGithub = "https://github.com/galaxy119/EXILED/releases/";
 		public string TmpDirectory;
+		public string AppData;
 		public DownloadWindow()
 		{
 			InitializeComponent();
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
+			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 		}
 
 		private void CancelClick(object sender, RoutedEventArgs e)
 		{
 			if (MessageBox.Show("Are you sure you want to cancel?", "Cancel the download", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 			{
-				System.Windows.Application.Current.Shutdown();
+				System.Windows.Application.Current.Shutdown(1);
 				MainWindow.StopAndCancel();
 			}
 		}
@@ -50,20 +54,32 @@ namespace EXILEDWinInstaller
 		internal void DownloadGame()
 		{
 			WebClient webClient = new WebClient();
+			dlTitleBlock.Text = "Downloading SteamCMD...";
 			Dispatcher.BeginInvoke(new ThreadStart(() =>
 			{
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(SteamCmdDownloaded);
-				if (Directory.Exists(TmpDirectory))
+				if (!Directory.Exists(TmpDirectory + "\\steamcmd\\"))
 				{
-					Directory.Delete(TmpDirectory, true);
+					Directory.CreateDirectory(TmpDirectory + "\\steamcmd\\");
 				}
-				Directory.CreateDirectory(TmpDirectory);
+				else 
+				{
+					if (File.Exists(TmpDirectory + "\\steamcmd\\steamcmd.exe"))
+					{
+						InstallSCPSL();
+						return;
+					}
+					else if (File.Exists(TmpDirectory + "\\steamcmd\\steamcmd.zip"))
+					{
+						SteamCmdDownloaded();
+						return;
+					}
+				}
 				
 				try
 				{
-					webClient.DownloadFileAsync(new Uri(steamCmd), TmpDirectory + "steamcmd.zip");
-
+					webClient.DownloadFileAsync(new Uri(steamCmd), TmpDirectory + "\\steamcmd\\steamcmd.zip");
 				}
 				catch (Exception ex)
 				{
@@ -71,19 +87,26 @@ namespace EXILEDWinInstaller
 				}
 			}));
 		}
-		async void SteamCmdDownloaded(object sender, AsyncCompletedEventArgs e)
+
+		async void SteamCmdDownloaded(object sender = null, AsyncCompletedEventArgs e = null)
 		{
 			dlTitleBlock.Text = "Extracting steamcmd...";
 			dlProgressInfo.Text = "This may take a while... Please, don't close the SteamCMD windows.";
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
-			await Task.Run(() => ZipFile.ExtractToDirectory(TmpDirectory + "steamcmd.zip", TmpDirectory));
+			await Task.Run(() => ZipFile.ExtractToDirectory(TmpDirectory + "\\steamcmd\\steamcmd.zip", TmpDirectory + "\\steamcmd\\"));
+			InstallSCPSL();
+		}
+		async void InstallSCPSL()
+		{
 			dlTitleBlock.Text = "Updating SteamCMD...";
 			await Task.Run(() =>
 			{
-				Process process = Process.Start(TmpDirectory + "steamcmd.exe", $"+quit"); //+login anonymous +force_install_dir {MainWindow.InstallDir} +app_update 996560 
+				// Just entering SteamCMD updates it.
+				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+quit");
 				process.WaitForExit();
 			});
+
 			dlTitleBlock.Text = "Installing SCP:SL to " + MainWindow.InstallDir;
 			if (!Directory.Exists(MainWindow.InstallDir))
 			{
@@ -91,18 +114,90 @@ namespace EXILEDWinInstaller
 			}
 			await Task.Run(() =>
 			{
-				Process process = Process.Start(TmpDirectory + "steamcmd.exe", $"+login anonymous +force_install_dir {MainWindow.InstallDir} +app_update 996560 +quit");
+				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+login anonymous +force_install_dir {MainWindow.InstallDir} +app_update 996560 +quit");
 				process.WaitForExit();
 			});
 			
-			dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + MainWindow.InstallDir;
+			dlTitleBlock.Text = "Downloading EXILED...";
 			DownloadExiled();
 		}
 
 		internal void DownloadExiled()
 		{
-			MessageBox.Show(new NotImplementedException().ToString());
-			System.Windows.Application.Current.Shutdown();
+			WebClient webClient = new WebClient();
+			Dispatcher.BeginInvoke(new ThreadStart(() =>
+			{
+				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(ExiledDownloaded);
+				
+				if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
+				{
+					Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
+				}
+				try
+				{
+					// taken from EXILED_Installer	
+					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(exiledGithub + "latest");
+					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+					Stream stream = response.GetResponseStream();
+					StreamReader reader = new StreamReader(stream);
+					string read = reader.ReadToEnd();
+					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+					string thing = readArray.FirstOrDefault(s => s.Contains("EXILED.tar.gz"));
+					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/EXILED.tar.gz");
+					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz";
+
+					webClient.DownloadFileAsync(new Uri(path), TmpDirectory + "EXILED.tar.gz");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error (Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
+					Application.Current.Shutdown(1);
+				}
+			}));
+		}
+		async void ExiledDownloaded(object sender, AsyncCompletedEventArgs e)
+		{
+			dlTitleBlock.Text = "Extracting EXILED...";
+			dlProgressInfo.Text = "This will be done in a few seconds.";
+			downloadBar.IsIndeterminate = true;
+			downloadBar.Value = 30;
+			await Task.Run(() => ExtractTarGz(TmpDirectory + "EXILED.tar.gz", TmpDirectory + "\\EXILED\\"));
+			File.Delete(TmpDirectory + "EXILED.tar.gz");
+			dlTitleBlock.Text = "Installing EXILED...";
+			await Task.Run(() =>
+			{
+				try 
+				{
+					string EXILEDtmp = TmpDirectory + "\\EXILED\\";
+					SafeMove("Assembly-CSharp.dll", EXILEDtmp, MainWindow.InstallDir + "\\SCPSL_Data\\Managed\\");
+					int lengthToRemove = EXILEDtmp.Length;
+					foreach(string file in Directory.GetFiles(EXILEDtmp))
+					{
+						SafeMove(file.Substring(lengthToRemove, file.Length), EXILEDtmp, AppData);
+					}
+				}
+				catch (Exception ex) {
+					MessageBox.Show(ex.ToString());
+					Application.Current.Shutdown();
+				}
+			});
+			dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + MainWindow.InstallDir;
+			downloadBar.Value = 100;
+			dlProgressInfo.Text = "Closing this window in a few seconds...";
+			await Task.Run(() => 
+			{
+				Thread.Sleep(3000);
+				MainWindow.Success();
+				Application.Current.Shutdown(0);
+			});
+		}
+		internal static void SafeMove(string fileName, string sourceDir, string destinationDir)
+		{
+			string path = destinationDir + fileName;
+			if (File.Exists(path)) File.Delete(path);
+			File.Move(sourceDir + fileName, path);
 		}
 
 		void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -110,8 +205,90 @@ namespace EXILEDWinInstaller
 			double bytesIn = e.BytesReceived;
 			double totalBytes = e.TotalBytesToReceive;
 			double percentage = bytesIn / totalBytes * 100;
-			dlProgressInfo.Text = "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
+			dlProgressInfo.Text = $"Downloaded {e.BytesReceived}B of {e.TotalBytesToReceive}B";
 			downloadBar.Value = percentage;
+		}
+
+		private static string Between(string str, string firstString, string lastString)
+		{
+			int pos1 = str.IndexOf(firstString, StringComparison.Ordinal) + firstString.Length;
+			int pos2 = str.IndexOf(lastString, StringComparison.Ordinal);
+			string finalString = str.Substring(pos1, pos2 - pos1);
+			return finalString;
+		}
+
+		private static void ExtractTarGz(string filename, string outputDir)
+		{
+			using (FileStream stream = File.OpenRead(filename))
+			{
+				ExtractTarGz(stream, outputDir);
+			}
+		}
+
+		private static void ExtractTarGz(Stream stream, string outputDir)
+		{
+			using (GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress))
+			{
+				const int chunk = 4096;
+				using (MemoryStream memStr = new MemoryStream())
+				{
+					int read;
+					byte[] buffer = new byte[chunk];
+					do
+					{
+						read = gzip.Read(buffer, 0, chunk);
+						memStr.Write(buffer, 0, read);
+					} while (read == chunk);
+
+					memStr.Seek(0, SeekOrigin.Begin);
+					ExtractTar(memStr, outputDir);
+				}
+			}
+		}
+
+		private static void ExtractTar(Stream stream, string outputDir)
+		{
+			byte[] buffer = new byte[100];
+			while (true)
+			{
+				try
+				{
+					stream.Read(buffer, 0, 100);
+					string name = Encoding.ASCII.GetString(buffer).Trim('\0');
+					if (string.IsNullOrWhiteSpace(name))
+						break;
+					stream.Seek(24, SeekOrigin.Current);
+					stream.Read(buffer, 0, 12);
+					long size = Convert.ToInt64(Encoding.UTF8.GetString(buffer, 0, 12).Trim('\0').Trim(), 8);
+
+					stream.Seek(376L, SeekOrigin.Current);
+
+					string output = Path.Combine(outputDir, name);
+					if (!Directory.Exists(Path.GetDirectoryName(output)))
+						Directory.CreateDirectory(Path.GetDirectoryName(output));
+					if (!name.Equals("./", StringComparison.InvariantCulture))
+					{
+						using (FileStream str = File.Open(output, FileMode.OpenOrCreate, FileAccess.Write))
+						{
+							byte[] buf = new byte[size];
+							stream.Read(buf, 0, buf.Length);
+							str.Write(buf, 0, buf.Length);
+						}
+					}
+
+					long pos = stream.Position;
+
+					long offset = 512 - (pos % 512);
+					if (offset == 512)
+						offset = 0;
+
+					stream.Seek(offset, SeekOrigin.Current);
+				}
+				catch (Exception)
+				{
+					// ignored
+				}
+			}
 		}
 	}
 }

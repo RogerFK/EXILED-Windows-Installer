@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IWshRuntimeLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -39,11 +40,6 @@ namespace EXILEDWinInstaller
 			InstallButton.Click += OnInstallButton;
 			RefreshInstallButton();
 		}
-		internal static void StopAndCancel()
-		{
-			System.Windows.Application.Current.Shutdown();
-		}
-
 		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
 			dlWindow = new DownloadWindow();
@@ -112,7 +108,7 @@ namespace EXILEDWinInstaller
 		// Feel free to suggest a more correct way to do this.
 		private void RefreshInstallButton() 
 		{
-			if (!Directory.Exists(System.IO.Path.Combine(InstallDir, "Managed")) && !File.Exists(System.IO.Path.Combine(InstallDir, "SCPSL.exe")))
+			if (!Directory.Exists(System.IO.Path.Combine(InstallDir, "Managed")) && !System.IO.File.Exists(System.IO.Path.Combine(InstallDir, "SCPSL.exe")))
 			{
 				forceInstall.IsEnabled = false;
 				forceInstall.Foreground = new SolidColorBrush(Color.FromArgb(255, 100, 100, 100));
@@ -142,9 +138,9 @@ namespace EXILEDWinInstaller
 			{
 				System.Diagnostics.Process.Start("explorer.exe", @"https://www.github.com/galaxy119/EXILED");
 			}
-			catch (Exception ex)
+			catch
 			{
-				File.AppendAllText(ErrorFile, ex.ToString());
+				MessageBox.Show("We can't open your web explorer for you.\nVisit https://www.github.com/galaxy119/EXILED or search it in Google.");
 			}
 		}
 
@@ -197,6 +193,33 @@ namespace EXILEDWinInstaller
 		private void ClickDiscordLink(object sender, MouseButtonEventArgs e)
 		{
 			System.Diagnostics.Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg");
+		}
+
+		internal static void StopAndCancel()
+		{
+			Application.Current.Shutdown(1);
+		}
+		internal static void Success()
+		{
+			if (MessageBox.Show("Do you want to create shortcuts on your Desktop?", "Enjoy!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+			{
+				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+				string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				CreateShortcut("SCP: Secret Laboratory Server", desktop, InstallDir, "");
+				CreateShortcut("EXILED Plugin Folder", desktop, appdata + "\\Plugins\\", "Place all your plugins here.");
+				CreateShortcut("EXILED Main Folder", desktop, appdata + "\\EXILED\\", "Place all your plugins here.");
+			}
+		}
+		public static void CreateShortcut(string shortcutName, string shortcutPath, string targetFileLocation, string description, string icon = null)
+		{
+			string shortcutLocation = Path.Combine(shortcutPath, shortcutName + ".lnk");
+			WshShell shell = new WshShell();
+			IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+			shortcut.Description = description;
+			if(!string.IsNullOrWhiteSpace(icon)) shortcut.IconLocation = icon;
+			
+			shortcut.TargetPath = targetFileLocation;
+			shortcut.Save();
 		}
 	}
 }

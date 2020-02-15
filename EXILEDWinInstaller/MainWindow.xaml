@@ -40,8 +40,8 @@
 			</TextBlock>
 		</CheckBox>
 		<TextBlock x:Name="gitHubDirectLink" HorizontalAlignment="Left" Margin="135,117,0,0" Text="Check the EXILED GitHub for updates" TextWrapping="Wrap" Foreground="SkyBlue" TextDecorations="Underline" VerticalAlignment="Top" Height="18" Width="244" MouseUp="ClickGitHubLink"/>
-		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="9" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" MouseLeftButtonDown="DragWindow"/>
-		<Image x:Name="cross" HorizontalAlignment="Right" Height="7" VerticalAlignment="Top" Width="10" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,1,1,0"/>
+		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="15" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" MouseLeftButtonDown="DragWindow"/>
+		<Image x:Name="cross" HorizontalAlignment="Right" Height="13" VerticalAlignment="Top" Width="19" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,1,1,0"/>
 		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,135,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
 	</Grid>
 </Window>
