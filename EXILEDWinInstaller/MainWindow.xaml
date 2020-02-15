@@ -7,13 +7,13 @@
         mc:Ignorable="d"
 		WindowStyle="None"
 		ResizeMode="NoResize"
-		WindowStartupLocation="CenterOwner"
+		WindowStartupLocation="CenterScreen"
         Title="EXILED Installer for Windows" Height="421" Width="656" Background="#2a2a2a" Foreground="#fafafa">
 	<Grid Name ="MainGrid" Background="#2a2a2a" Margin="0,0,0,5">
 		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
                  VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL-Server" KeyUp="FileNameEnter"/>
 		<Button Content="Browse" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a" Foreground="Azure"
-				Height="32" HorizontalAlignment="Left" Margin="475,255,0,0"
+				Height="36" HorizontalAlignment="Left" Margin="476,253,0,0"
 				Name="BrowseXButton" VerticalAlignment="Top" Width="87" FontSize="20" Click="BrowseButton" />
 		<Button x:Name="InstallButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a"
 		HorizontalAlignment="Center"

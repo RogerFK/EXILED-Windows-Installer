@@ -241,15 +241,12 @@ namespace EXILEDWinInstaller
 
 		private async void Success()
 		{
-			dlTitleBlock.Text = "Successfully installed the SCP:SL server in " + InstallDir;
+			dlTitleBlock.Text = "Successfully installed the SCP:SL server";
 			downloadBar.Value = 100;
 			downloadBar.IsIndeterminate = false;
-			dlProgressInfo.Text = "Closing this window in a few seconds...";
-			await Task.Run(() =>
-			{
-				Thread.Sleep(3000);
-				AskForShortcuts();
-			});
+			dlProgressInfo.Text = "Installed to:" + InstallDir + "\nClosing this window in a few seconds...";
+			await Task.Delay(3000);
+			AskForShortcuts();
 			MainWindow.EndProgram(0);
 		}
 		internal static void SafeMove(string fileName, string sourceDir, string destinationDir)
@@ -352,7 +349,7 @@ namespace EXILEDWinInstaller
 
 		internal void AskForShortcuts()
 		{
-			if (MessageBox.Show("Do you want to create shortcuts on your Desktop?", "Enjoy!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+			if (MessageBox.Show("Do you want to create shortcuts on your Desktop?", "Enjoy!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 			{
 				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 				string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
