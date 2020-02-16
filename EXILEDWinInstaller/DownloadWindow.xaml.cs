@@ -30,15 +30,17 @@ namespace EXILEDWinInstaller
 	{
 		private const string steamCmd = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
 		private const string exiledGithub = "https://github.com/galaxy119/EXILED/releases/";
-		public string TmpDirectory;
+		static public string TmpDirectory;
 		public string AppData;
 		private string InstallDir;
 		private bool MultiAdmin;
-		public DownloadWindow(bool MultiAdmin, string InstallDir)
+		private bool testing;
+		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing)
 		{
 			InitializeComponent();
 			this.InstallDir = InstallDir;
 			this.MultiAdmin = MultiAdmin;
+			this.testing = testing;
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
 			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 		}
@@ -142,8 +144,9 @@ namespace EXILEDWinInstaller
 				}
 				try
 				{
-					// taken from EXILED_Installer	
-					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(exiledGithub + "latest");
+					string webPage = exiledGithub + (testing ? "" : "latest");
+					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webPage);
+					
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 					Stream stream = response.GetResponseStream();
@@ -152,17 +155,18 @@ namespace EXILEDWinInstaller
 					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 					string thing = readArray.FirstOrDefault(s => s.Contains("EXILED.tar.gz"));
 					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/EXILED.tar.gz");
-					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz";
+					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz"; 
 
 					webClient.DownloadFileAsync(new Uri(path), TmpDirectory + "EXILED.tar.gz");
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show("Error (Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
+					MessageBox.Show("Error while downloading EXILED\n(Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
 					Application.Current.Shutdown(1);
 				}
 			}));
 		}
+
 		async void ExiledDownloaded(object sender, AsyncCompletedEventArgs e)
 		{
 			dlTitleBlock.Text = "Extracting EXILED...";
@@ -176,13 +180,9 @@ namespace EXILEDWinInstaller
 			{
 				try
 				{
-					string EXILEDtmp = TmpDirectory + "\\EXILED\\";
-					SafeMove("Assembly-CSharp.dll", EXILEDtmp, InstallDir + "\\SCPSL_Data\\Managed\\");
-					int lengthToRemove = EXILEDtmp.Length;
-					foreach (string file in Directory.GetFiles(EXILEDtmp))
-					{
-						SafeMove(file.Substring(lengthToRemove, file.Length), EXILEDtmp, AppData);
-					}
+					string EXILEDtmp = TmpDirectory + "EXILED\\";
+					SafeMove("Assembly-CSharp.dll", EXILEDtmp, InstallDir + "SCPSL_Data\\Managed\\");
+					MoveDirectory(EXILEDtmp, AppData);
 				}
 				catch (Exception ex)
 				{
@@ -196,6 +196,36 @@ namespace EXILEDWinInstaller
 			}
 			else Success();
 		}
+		// pretty cool, credit to: https://stackoverflow.com/a/2553245/11000333
+		public static void MoveDirectory(string source, string target)
+		{
+			var sourcePath = source.TrimEnd('\\', ' ');
+			var targetPath = target.TrimEnd('\\', ' ');
+			var files = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories)
+								 .GroupBy(s => Path.GetDirectoryName(s));
+			foreach (var folder in files)
+			{
+				var targetFolder = folder.Key.Replace(sourcePath, targetPath);
+				if(!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
+				foreach (var file in folder)
+				{
+					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
+					if (File.Exists(targetFile)) File.Delete(targetFile);
+					File.Move(file, targetFile);
+				}
+			}
+			Directory.Delete(source, true);
+		}
+
+		private string GetName(string file)
+		{
+			char c = '\0';
+			int i;
+			for (i = file.Length - 2; c != '\\'; i--, c = file[i - 1]) ;
+			MessageBox.Show(file.Substring(i, file.Length - i));
+			return file.Substring(i, file.Length - i);
+		}
+
 		internal void DownloadMultiAdmin()
 		{
 			dlTitleBlock.Text = "Downloading MultiAdmin...";
@@ -211,7 +241,6 @@ namespace EXILEDWinInstaller
 				}
 				try
 				{
-					// taken from EXILED_Installer	
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://github.com/Grover-c13/MultiAdmin/releases/latest");
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 

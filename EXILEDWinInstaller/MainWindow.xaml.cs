@@ -34,6 +34,7 @@ namespace EXILEDWinInstaller
 		private bool mustDownload;
 		internal static DownloadWindow dlWindow;
 		internal static MainWindow Instance;
+		private readonly bool exiledFound;
 		public bool MultiAdmin
 		{
 			get
@@ -50,14 +51,15 @@ namespace EXILEDWinInstaller
 				Application.Current.Shutdown();
 			}
 			InitializeComponent();
-			InstallButton.Click += OnInstallButton;
+			InstallButton.Click += OnInstallButton; 
+			exiledFound = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EXILED\\EXILED.dll");
 			RefreshInstallButton();
 			Instance = this;
 		}
 		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
 			if (dlWindow != null) return;
-			dlWindow = new DownloadWindow(MultiAdmin, InstallDir);
+			dlWindow = new DownloadWindow(MultiAdmin, InstallDir, this.testingReleaseCheckbox.IsChecked ?? false);
 			dlWindow.Show();
 			if (mustDownload)
 			{
@@ -135,7 +137,7 @@ namespace EXILEDWinInstaller
 			}
 			else
 			{
-				Run run = new Run("Install ");
+				Run run = new Run(exiledFound ? "Update " :"Install ");
 				run.Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229));
 				InstallButtonText.Inlines.Add(run);
 				run = new Run("E");
@@ -196,16 +198,28 @@ namespace EXILEDWinInstaller
 					MessageBox.Show("no chiptune for u");
 					return;
 			}
+
 			// Yeah, this installer only works locally. Use EXILED_Installer.exe if you can't use a GUI instead.
-			if (!Uri.IsWellFormedUriString(FileNameTextBox.Text, UriKind.Absolute) && !FileNameTextBox.Text.StartsWith("http") && !FileNameTextBox.Text.StartsWith("ftp"))
+			if (!ValidWinPath(FileNameTextBox.Text)
+				|| FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] == '.'
+				|| FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] == ' '
+				|| FileNameTextBox.Text.StartsWith("http") 
+				|| FileNameTextBox.Text.StartsWith("ftp"))
 			{
-				MessageBox.Show("Invalid path. Please introduce a valid path (for example: C:\\SCPSL\\", "Error");
+				MessageBox.Show("Invalid path. Please introduce a valid path\n(Example of a valid path: C:\\SCPSL\\MyServer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				FileNameTextBox.Text = InstallDir;
 				return;
 			}
 			InstallDir = FileNameTextBox.Text;
+			RefreshInstallButton();
 		}
-
+		private bool ValidWinPath(string path)
+		{
+			// credit: https://stackoverflow.com/questions/24702677/regular-expression-to-match-a-valid-absolute-windows-directory-containing-spaces
+			// I don't know any Regex at all but I think the [ .] part doesn't work in C#.
+			Regex reg = new Regex("^[a-zA-Z]:\\\\(((?![<>:\"/\\\\|?*]).)+((?<![ .])\\\\)?)*$");
+			return reg.IsMatch(path);
+		}
 		private void ClickDiscordLink(object sender, MouseButtonEventArgs e)
 		{
 			System.Diagnostics.Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg");
