@@ -77,7 +77,7 @@ namespace EXILEDWinInstaller
 			if (sender == testingReleaseCheckbox)
 			{
 				if (MessageBox.Show("Are you sure you want to use the latest testing release?\n\nWarning: some EXILED features might be broken. Don't use unless a plugin requires it.",
-				"Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+				"Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 				{
 					testingReleaseCheckbox.IsChecked = true;
 				}
@@ -135,15 +135,15 @@ namespace EXILEDWinInstaller
 				InstallButtonText.Inlines.Add(run);
 			}
 		}
-		private void ClickGitHubLink(object sender, MouseButtonEventArgs e)
+		private void ImageGitHubLink(object sender, MouseButtonEventArgs e)
 		{
 			try
 			{
-				System.Diagnostics.Process.Start("explorer.exe", @"https://www.github.com/galaxy119/EXILED");
+				System.Diagnostics.Process.Start(@"https://www.github.com/galaxy119/EXILED");
 			}
 			catch
 			{
-				MessageBox.Show("We can't open your web explorer for you.\nVisit https://www.github.com/galaxy119/EXILED or search it in Google.");
+				MessageBox.Show("We can't open your web explorer for you.\nVisit https://www.github.com/galaxy119/EXILED or search it in Google.", "Can't open link", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -212,16 +212,28 @@ namespace EXILEDWinInstaller
 		}
 		private void ClickDiscordLink(object sender, MouseButtonEventArgs e)
 		{
-			System.Diagnostics.Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg");
+			System.Diagnostics.Process.Start(@"https://discord.gg/PyUkWTg");
 		}
 		private void RentServer(object sender, MouseButtonEventArgs e)
 		{
-			System.Diagnostics.Process.Start("explorer.exe", @"https://exiled.host/");
+			System.Diagnostics.Process.Start(@"https://exiled.host/");
 		}
 
 		internal static void EndProgram(int code = 1)
 		{
 			Application.Current.Shutdown(0);
+		}
+
+		private void InstallerGitHubLink(object sender, MouseButtonEventArgs e)
+		{
+			try
+			{
+				System.Diagnostics.Process.Start(@"https://github.com/RogerFK/EXILED-Windows-Installer");
+			}
+			catch
+			{
+				MessageBox.Show("We can't open your web explorer for you.\nVisit https://github.com/RogerFK/EXILED-Windows-Installer or search it in Google.", "Can't open link", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 	}
 }
