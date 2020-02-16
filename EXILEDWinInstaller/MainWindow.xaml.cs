@@ -64,6 +64,7 @@ namespace EXILEDWinInstaller
 			{
 				if (folder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 				{
+					if (folder.SelectedPath[folder.SelectedPath.Length - 1] != '\\') folder.SelectedPath += '\\';
 					FileNameTextBox.Text = InstallDir = folder.SelectedPath;
 					RefreshInstallButton();
 				}
@@ -196,6 +197,10 @@ namespace EXILEDWinInstaller
 				MessageBox.Show("Invalid path. Please introduce a valid path\n(Example of a valid path: C:\\SCPSL\\MyServer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				FileNameTextBox.Text = InstallDir;
 				return;
+			}
+			if (FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] != '\\')
+			{
+				FileNameTextBox.Text += '\\';
 			}
 			InstallDir = FileNameTextBox.Text;
 			RefreshInstallButton();
