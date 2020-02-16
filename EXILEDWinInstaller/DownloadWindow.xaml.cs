@@ -85,7 +85,7 @@ namespace EXILEDWinInstaller
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show("Error (Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
+					MessageBox.Show("Error downloading the game\n(Notify us in #support in our Discord with a screenshot)\n---------------------\n " + ex, "Error");
 				}
 			}));
 		}
@@ -169,7 +169,7 @@ namespace EXILEDWinInstaller
 			downloadBar.Value = 30;
 
 			await Task.Run(() => ExtractTarGz(TmpDirectory + "EXILED.tar.gz", TmpDirectory + "\\EXILED\\"));
-			MessageBox.Show("Die before delete tmp");
+	
 			File.Delete(TmpDirectory + "EXILED.tar.gz");
 			dlTitleBlock.Text = "Installing EXILED...";
 			await Task.Run(() =>
@@ -177,13 +177,12 @@ namespace EXILEDWinInstaller
 				try
 				{
 					string EXILEDtmp = TmpDirectory + "EXILED\\";
-					MessageBox.Show("Die before safemove");
 					SafeMove("Assembly-CSharp.dll", EXILEDtmp, InstallDir + "SCPSL_Data\\Managed\\");
 					MoveDirectory(EXILEDtmp, AppData);
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.ToString());
+					MessageBox.Show("Error while installing EXILED\n(Notify us in #support in our Discord with a screenshot)" + ex.ToString());
 					Application.Current.Shutdown();
 				}
 			});
