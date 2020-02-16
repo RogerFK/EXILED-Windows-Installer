@@ -1,26 +1,13 @@
-﻿using IWshRuntimeLibrary;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using File = System.IO.File;
-using Path = System.IO.Path;
 
 namespace EXILEDWinInstaller
 {
@@ -51,7 +38,7 @@ namespace EXILEDWinInstaller
 				Application.Current.Shutdown();
 			}
 			InitializeComponent();
-			InstallButton.Click += OnInstallButton; 
+			InstallButton.Click += OnInstallButton;
 			exiledFound = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EXILED\\EXILED.dll");
 			RefreshInstallButton();
 			Instance = this;
@@ -137,7 +124,7 @@ namespace EXILEDWinInstaller
 			}
 			else
 			{
-				Run run = new Run(exiledFound ? "Update " :"Install ");
+				Run run = new Run(exiledFound ? "Update " : "Install ");
 				run.Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229));
 				InstallButtonText.Inlines.Add(run);
 				run = new Run("E");
@@ -203,7 +190,7 @@ namespace EXILEDWinInstaller
 			if (!ValidWinPath(FileNameTextBox.Text)
 				|| FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] == '.'
 				|| FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] == ' '
-				|| FileNameTextBox.Text.StartsWith("http") 
+				|| FileNameTextBox.Text.StartsWith("http")
 				|| FileNameTextBox.Text.StartsWith("ftp"))
 			{
 				MessageBox.Show("Invalid path. Please introduce a valid path\n(Example of a valid path: C:\\SCPSL\\MyServer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using IWshRuntimeLibrary;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
-using System.IO;
-using Path = System.IO.Path;
-using System.IO.Compression;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Linq;
-using IWshRuntimeLibrary;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Shapes;
 using File = System.IO.File;
+using Path = System.IO.Path;
 
 namespace EXILEDWinInstaller
 {
@@ -146,7 +140,7 @@ namespace EXILEDWinInstaller
 				{
 					string webPage = exiledGithub + (testing ? "" : "latest");
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webPage);
-					
+
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 					Stream stream = response.GetResponseStream();
@@ -155,7 +149,7 @@ namespace EXILEDWinInstaller
 					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 					string thing = readArray.FirstOrDefault(s => s.Contains("EXILED.tar.gz"));
 					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/EXILED.tar.gz");
-					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz"; 
+					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz";
 
 					webClient.DownloadFileAsync(new Uri(path), TmpDirectory + "EXILED.tar.gz");
 				}
@@ -206,7 +200,7 @@ namespace EXILEDWinInstaller
 			foreach (var folder in files)
 			{
 				var targetFolder = folder.Key.Replace(sourcePath, targetPath);
-				if(!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
+				if (!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
 				foreach (var file in folder)
 				{
 					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
@@ -216,16 +210,6 @@ namespace EXILEDWinInstaller
 			}
 			Directory.Delete(source, true);
 		}
-
-		private string GetName(string file)
-		{
-			char c = '\0';
-			int i;
-			for (i = file.Length - 2; c != '\\'; i--, c = file[i - 1]) ;
-			MessageBox.Show(file.Substring(i, file.Length - i));
-			return file.Substring(i, file.Length - i);
-		}
-
 		internal void DownloadMultiAdmin()
 		{
 			dlTitleBlock.Text = "Downloading MultiAdmin...";
