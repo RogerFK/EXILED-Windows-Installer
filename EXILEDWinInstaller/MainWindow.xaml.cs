@@ -118,7 +118,6 @@ namespace EXILEDWinInstaller
 				run = new Run("E");
 				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48));
 				InstallButtonText.Inlines.Add(run);
-				InstallButtonText.Inlines.Add(run);
 				run = new Run("XILED");
 				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
 				InstallButtonText.Inlines.Add(run);
@@ -130,7 +129,6 @@ namespace EXILEDWinInstaller
 				InstallButtonText.Inlines.Add(run);
 				run = new Run("E");
 				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48));
-				InstallButtonText.Inlines.Add(run);
 				InstallButtonText.Inlines.Add(run);
 				run = new Run("XILED");
 				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
