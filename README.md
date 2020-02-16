@@ -4,4 +4,4 @@
 ### To download it, simply head to [the releases page.](https://github.com/RogerFK/EXILED-Windows-Installer/releases)
 It's pretty straightforward, just follow the instructions. It may also be used as an updating tool.
 ## Screenshot of the main page
-![shit text](https://cdn.discordapp.com/attachments/673347615328567324/678664750506442818/unknown.png)
+![lookin good ain't it](https://cdn.discordapp.com/attachments/673347615328567324/678703231739756546/unknown.png)
