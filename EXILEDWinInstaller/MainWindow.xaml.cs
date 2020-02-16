@@ -112,7 +112,7 @@ namespace EXILEDWinInstaller
 			InstallButtonText.Inlines.Clear();
 			if (download)
 			{
-				Run run = new Run("Download SCP:SL and install ");
+				Run run = new Run($"{(forceInstall.IsChecked ?? false ? "Update" : "Download")} SCP:SL and install ");
 				run.Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229));
 				InstallButtonText.Inlines.Add(run);
 				run = new Run("E");

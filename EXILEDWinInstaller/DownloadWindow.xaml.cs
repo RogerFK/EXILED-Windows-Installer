@@ -116,11 +116,11 @@ namespace EXILEDWinInstaller
 			}
 			await Task.Run(() =>
 			{
-				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+login anonymous +force_install_dir {InstallDir} +app_update 996560 +quit");
+				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+login anonymous \"+force_install_dir \\\"{InstallDir}\\\"\" +app_update 996560 +quit");
 				process.WaitForExit();
 			});
-
 			dlTitleBlock.Text = "Downloading EXILED...";
+			dlProgressInfo.Text = "This will take a second...";
 			DownloadExiled();
 		}
 
@@ -167,7 +167,9 @@ namespace EXILEDWinInstaller
 			dlProgressInfo.Text = "This will be done in a few seconds.";
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
+
 			await Task.Run(() => ExtractTarGz(TmpDirectory + "EXILED.tar.gz", TmpDirectory + "\\EXILED\\"));
+			MessageBox.Show("Die before delete tmp");
 			File.Delete(TmpDirectory + "EXILED.tar.gz");
 			dlTitleBlock.Text = "Installing EXILED...";
 			await Task.Run(() =>
@@ -175,6 +177,7 @@ namespace EXILEDWinInstaller
 				try
 				{
 					string EXILEDtmp = TmpDirectory + "EXILED\\";
+					MessageBox.Show("Die before safemove");
 					SafeMove("Assembly-CSharp.dll", EXILEDtmp, InstallDir + "SCPSL_Data\\Managed\\");
 					MoveDirectory(EXILEDtmp, AppData);
 				}
@@ -254,10 +257,10 @@ namespace EXILEDWinInstaller
 
 		private async void Success()
 		{
-			dlTitleBlock.Text = "Successfully installed the SCP:SL server";
+			dlTitleBlock.Text = "Successfully installed.";
 			downloadBar.Value = 100;
 			downloadBar.IsIndeterminate = false;
-			dlProgressInfo.Text = "Installed to:" + InstallDir + "\nClosing this window in a few seconds...";
+			dlProgressInfo.Text = "Installed to: " + InstallDir + "\nClosing this window in a few seconds...";
 			await Task.Delay(3000);
 			AskForShortcuts();
 			MainWindow.EndProgram(0);
@@ -266,6 +269,7 @@ namespace EXILEDWinInstaller
 		{
 			string path = destinationDir + fileName;
 			if (File.Exists(path)) File.Delete(path);
+			if (!Directory.Exists(destinationDir)) Directory.CreateDirectory(destinationDir);
 			File.Move(sourceDir + fileName, path);
 		}
 
