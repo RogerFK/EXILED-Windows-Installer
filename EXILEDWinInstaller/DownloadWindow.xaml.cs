@@ -367,18 +367,22 @@ namespace EXILEDWinInstaller
 				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 				string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 				string iconDir = appdata + "\\EXILED\\EXILED.ico";
+				string launchIconDir = InstallDir + "EXILEDLauncher.ico";
 
-				CreateIcon(iconDir);
+				CreateIcon(iconDir, Properties.Resources.EXILED);
+				CreateIcon(launchIconDir, Properties.Resources.EXILEDLauncher);
 
-				CreateLaunchBat(desktop);
+				CreateLaunchBat(InstallDir);
+
 				CreateShortcut("EXILED Plugin Folder", desktop, appdata + "\\Plugins\\", "Place all your plugins here.", iconDir);
 				CreateShortcut("EXILED Main Folder", desktop, appdata + "\\EXILED\\", "Configs and alike will be here.", iconDir);
+				CreateShortcut("Launch SCPSL Server", desktop, InstallDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
 			}
 		}
 
 		private void CreateLaunchBat(string path)
 		{
-			using (StreamWriter writer = new StreamWriter(path + "\\Launch SCPSL Server.bat"))
+			using (StreamWriter writer = new StreamWriter(path + "launch.bat"))
 			{
 				writer.WriteLine("cd /D " + InstallDir);
 				writer.WriteLine(MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe");
@@ -387,11 +391,11 @@ namespace EXILEDWinInstaller
 			}
 		}
 
-		public void CreateIcon(string path)
+		public void CreateIcon(string path, System.Drawing.Icon icon)
 		{
 			using (var file = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
-				Properties.Resources.EXILED_ico.Save(file);
+				icon.Save(file);
 			}
 		}
 		public static void CreateShortcut(string shortcutName, string shortcutPath, string targetFileLocation, string description, string icon = null)

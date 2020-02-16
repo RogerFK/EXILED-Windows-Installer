@@ -63,9 +63,19 @@ namespace EXILEDWinInstaller.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon EXILED_ico {
+        internal static System.Drawing.Icon EXILED {
             get {
-                object obj = ResourceManager.GetObject("EXILED.ico", resourceCulture);
+                object obj = ResourceManager.GetObject("EXILED", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon EXILEDLauncher {
+            get {
+                object obj = ResourceManager.GetObject("EXILEDLauncher", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
