@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Downloading..." Height="186" Width="492" Background="#2F2F2F"
 		WindowStyle="None"
-		WindowStartupLocation="CenterOwner"
+		WindowStartupLocation="CenterScreen"
 		ResizeMode="NoResize">
 
 	<Grid Background="#DF1010" Margin="1">

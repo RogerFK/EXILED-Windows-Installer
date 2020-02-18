@@ -27,8 +27,8 @@ namespace EXILEDWinInstaller
 		static public string TmpDirectory;
 		public string AppData;
 		private string InstallDir;
-		private bool MultiAdmin;
-		private bool testing;
+		private readonly bool MultiAdmin;
+		private readonly bool testing;
 		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing)
 		{
 			InitializeComponent();
@@ -38,7 +38,9 @@ namespace EXILEDWinInstaller
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
 			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 		}
-
+		/////////////////////////////////////
+		//			 UI ELEMENTS		   //
+		/////////////////////////////////////
 		private void CancelClick(object sender, RoutedEventArgs e)
 		{
 			if (MessageBox.Show("Are you sure you want to cancel?", "Cancel the download", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
@@ -53,6 +55,9 @@ namespace EXILEDWinInstaller
 			var win = Window.GetWindow(move);
 			win.DragMove();
 		}
+		/////////////////////////////////////
+		//		   DOWNLOAD METHODS		   //
+		/////////////////////////////////////
 		internal void DownloadGame()
 		{
 			WebClient webClient = new WebClient();
@@ -89,7 +94,6 @@ namespace EXILEDWinInstaller
 				}
 			}));
 		}
-
 		async void SteamCmdDownloaded(object sender = null, AsyncCompletedEventArgs e = null)
 		{
 			dlTitleBlock.Text = "Extracting steamcmd...";
@@ -192,26 +196,6 @@ namespace EXILEDWinInstaller
 			}
 			else Success();
 		}
-		// pretty cool, credit to: https://stackoverflow.com/a/2553245/11000333
-		public static void MoveDirectory(string source, string target)
-		{
-			var sourcePath = source.TrimEnd('\\', ' ');
-			var targetPath = target.TrimEnd('\\', ' ');
-			var files = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories)
-								 .GroupBy(s => Path.GetDirectoryName(s));
-			foreach (var folder in files)
-			{
-				var targetFolder = folder.Key.Replace(sourcePath, targetPath);
-				if (!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
-				foreach (var file in folder)
-				{
-					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
-					if (File.Exists(targetFile)) File.Delete(targetFile);
-					File.Move(file, targetFile);
-				}
-			}
-			Directory.Delete(source, true);
-		}
 		internal void DownloadMultiAdmin()
 		{
 			dlTitleBlock.Text = "Downloading MultiAdmin...";
@@ -249,10 +233,7 @@ namespace EXILEDWinInstaller
 			}));
 		}
 
-		void MultiAdminDownloaded(object sender, AsyncCompletedEventArgs e)
-		{
-			Success();
-		}
+		void MultiAdminDownloaded(object sender, AsyncCompletedEventArgs e) => Success();
 
 		private async void Success()
 		{
@@ -263,6 +244,30 @@ namespace EXILEDWinInstaller
 			await Task.Delay(3000);
 			AskForShortcuts();
 			MainWindow.EndProgram(0);
+		}
+
+		/////////////////////////////////////
+		//		   GENERIC METHODS	       //
+		/////////////////////////////////////
+		// pretty cool, credit to: https://stackoverflow.com/a/2553245/11000333
+		public static void MoveDirectory(string source, string target)
+		{
+			var sourcePath = source.TrimEnd('\\', ' ');
+			var targetPath = target.TrimEnd('\\', ' ');
+			var files = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories)
+								 .GroupBy(s => Path.GetDirectoryName(s));
+			foreach (var folder in files)
+			{
+				var targetFolder = folder.Key.Replace(sourcePath, targetPath);
+				if (!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
+				foreach (var file in folder)
+				{
+					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
+					if (File.Exists(targetFile)) File.Delete(targetFile);
+					File.Move(file, targetFile);
+				}
+			}
+			Directory.Delete(source, true);
 		}
 		internal static void SafeMove(string fileName, string sourceDir, string destinationDir)
 		{

@@ -112,26 +112,32 @@ namespace EXILEDWinInstaller
 			InstallButtonText.Inlines.Clear();
 			if (download)
 			{
-				Run run = new Run($"{(forceInstall.IsChecked ?? false ? "Update" : "Download")} SCP:SL and install ");
-				run.Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229));
+				Run run = new Run($"{(forceInstall.IsChecked ?? false ? "Update" : "Download")} SCP:SL and install ") {
+					Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229))
+				};
 				InstallButtonText.Inlines.Add(run);
-				run = new Run("E");
-				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48));
+				run = new Run("E") {
+					Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48))
+				};
 				InstallButtonText.Inlines.Add(run);
-				run = new Run("XILED");
-				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+				run = new Run("XILED") {
+					Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
+				};
 				InstallButtonText.Inlines.Add(run);
 			}
 			else
 			{
-				Run run = new Run(exiledFound ? "Update " : "Install ");
-				run.Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229));
+				Run run = new Run(exiledFound ? "Update " : "Install ") {
+					Foreground = new SolidColorBrush(Color.FromRgb(229, 229, 229))
+				};
 				InstallButtonText.Inlines.Add(run);
-				run = new Run("E");
-				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48));
+				run = new Run("E") {
+					Foreground = new SolidColorBrush(Color.FromRgb(214, 51, 48))
+				};
 				InstallButtonText.Inlines.Add(run);
-				run = new Run("XILED");
-				run.Foreground = run.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+				run = new Run("XILED") {
+					Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
+				};
 				InstallButtonText.Inlines.Add(run);
 			}
 		}
@@ -147,25 +153,13 @@ namespace EXILEDWinInstaller
 			}
 		}
 
-		private void CheckForceInstallToggle(object sender, RoutedEventArgs e)
-		{
-			RefreshInstallButton();
-		}
+		private void CheckForceInstallToggle(object sender, RoutedEventArgs e) => RefreshInstallButton();
 
-		private void FocusCross(object sender, MouseEventArgs e)
-		{
-			cross.Source = new BitmapImage(new Uri(@"\images\focused_x.png", UriKind.Relative));
-		}
+		private void FocusCross(object sender, MouseEventArgs e) =>	cross.Source = new BitmapImage(new Uri(@"\images\focused_x.png", UriKind.Relative));
 
-		private void UnfocusCross(object sender, MouseEventArgs e)
-		{
-			cross.Source = new BitmapImage(new Uri(@"\images\unfocused_x.png", UriKind.Relative));
-		}
+		private void UnfocusCross(object sender, MouseEventArgs e) => cross.Source = new BitmapImage(new Uri(@"\images\unfocused_x.png", UriKind.Relative));
 
-		private void ExitApp(object sender, MouseButtonEventArgs e)
-		{
-			Application.Current.Shutdown(0);
-		}
+		private void ExitApp(object sender, MouseButtonEventArgs e) => Application.Current.Shutdown(0);
 
 		private void DragWindow(object sender, MouseButtonEventArgs e)
 		{
@@ -210,19 +204,10 @@ namespace EXILEDWinInstaller
 			Regex reg = new Regex("^[a-zA-Z]:\\\\(((?![<>:\"/\\\\|?*]).)+((?<![ .])\\\\)?)*$");
 			return reg.IsMatch(path);
 		}
-		private void ClickDiscordLink(object sender, MouseButtonEventArgs e)
-		{
-			System.Diagnostics.Process.Start(@"https://discord.gg/PyUkWTg");
-		}
-		private void RentServer(object sender, MouseButtonEventArgs e)
-		{
-			System.Diagnostics.Process.Start(@"https://exiled.host/");
-		}
+		private void ClickDiscordLink(object sender, MouseButtonEventArgs e) => System.Diagnostics.Process.Start(@"https://discord.gg/PyUkWTg");
+		private void RentServer(object sender, MouseButtonEventArgs e) => System.Diagnostics.Process.Start(@"https://exiled.host/");
 
-		internal static void EndProgram(int code = 1)
-		{
-			Application.Current.Shutdown(0);
-		}
+		internal static void EndProgram(int code = 1) => Application.Current.Shutdown(code);
 
 		private void InstallerGitHubLink(object sender, MouseButtonEventArgs e)
 		{
