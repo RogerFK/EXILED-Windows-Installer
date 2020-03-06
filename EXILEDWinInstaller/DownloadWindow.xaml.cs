@@ -29,7 +29,8 @@ namespace EXILEDWinInstaller
 		private string InstallDir;
 		private readonly bool MultiAdmin;
 		private readonly bool testing;
-		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing)
+		private bool userCancelling;
+		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing, bool mustDownload)
 		{
 			InitializeComponent();
 			this.InstallDir = InstallDir;
@@ -37,17 +38,27 @@ namespace EXILEDWinInstaller
 			this.testing = testing;
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
 			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+			if (mustDownload)
+			{
+				DownloadGame();
+			}
+			else
+			{
+				DownloadExiled();
+			}
 		}
 		/////////////////////////////////////
 		//			 UI ELEMENTS		   //
 		/////////////////////////////////////
 		private void CancelClick(object sender, RoutedEventArgs e)
 		{
+			userCancelling = true;
 			if (MessageBox.Show("Are you sure you want to cancel?", "Cancel the download", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 			{
 				System.Windows.Application.Current.Shutdown(1);
 				MainWindow.EndProgram();
 			}
+			userCancelling = false;
 		}
 		private void DragWindow(object sender, MouseButtonEventArgs e)
 		{
@@ -94,8 +105,18 @@ namespace EXILEDWinInstaller
 				}
 			}));
 		}
+		private async Task WaitForUser()
+		{
+			while (userCancelling)
+			{
+				dlTitleBlock.Text = "Awaiting for your response...";
+				dlProgressInfo.Text = "Awaiting for the user's input...";
+				await Task.Delay(50);
+			}
+		}
 		async void SteamCmdDownloaded(object sender = null, AsyncCompletedEventArgs e = null)
 		{
+			await WaitForUser();
 			dlTitleBlock.Text = "Extracting steamcmd...";
 			dlProgressInfo.Text = "This may take a while... Please, don't close the SteamCMD windows.";
 			downloadBar.IsIndeterminate = true;
@@ -103,6 +124,7 @@ namespace EXILEDWinInstaller
 			await Task.Run(() => ZipFile.ExtractToDirectory(TmpDirectory + "\\steamcmd\\steamcmd.zip", TmpDirectory + "\\steamcmd\\"));
 			InstallSCPSL();
 		}
+
 		async void InstallSCPSL()
 		{
 			dlTitleBlock.Text = "Updating SteamCMD...";
@@ -112,7 +134,7 @@ namespace EXILEDWinInstaller
 				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+quit");
 				process.WaitForExit();
 			});
-
+			await WaitForUser();
 			dlTitleBlock.Text = "Installing SCP:SL to " + InstallDir;
 			if (!Directory.Exists(InstallDir))
 			{
@@ -123,19 +145,19 @@ namespace EXILEDWinInstaller
 				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+login anonymous \"+force_install_dir \\\"{InstallDir}\\\"\" +app_update 996560 +quit");
 				process.WaitForExit();
 			});
-			dlTitleBlock.Text = "Downloading EXILED...";
-			dlProgressInfo.Text = "This will take a second...";
+			await WaitForUser();
 			DownloadExiled();
 		}
 
 		internal void DownloadExiled()
 		{
+			dlTitleBlock.Text = "Downloading EXILED...";
+			dlProgressInfo.Text = "This will take a second...";
 			WebClient webClient = new WebClient();
 			Dispatcher.BeginInvoke(new ThreadStart(() =>
 			{
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(ExiledDownloaded);
-
 				if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
 				{
 					Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
@@ -143,8 +165,9 @@ namespace EXILEDWinInstaller
 				try
 				{
 					string webPage = exiledGithub + (testing ? "" : "latest");
+					MessageBox.Show("Allah");
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webPage);
-
+					MessageBox.Show("Allah2");
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 					Stream stream = response.GetResponseStream();
@@ -167,13 +190,15 @@ namespace EXILEDWinInstaller
 
 		async void ExiledDownloaded(object sender, AsyncCompletedEventArgs e)
 		{
+			await WaitForUser();
 			dlTitleBlock.Text = "Extracting EXILED...";
 			dlProgressInfo.Text = "This will be done in a few seconds.";
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
 
 			await Task.Run(() => ExtractTarGz(TmpDirectory + "EXILED.tar.gz", TmpDirectory + "\\EXILED\\"));
-	
+			await WaitForUser();
+
 			File.Delete(TmpDirectory + "EXILED.tar.gz");
 			dlTitleBlock.Text = "Installing EXILED...";
 			await Task.Run(() =>
@@ -192,6 +217,7 @@ namespace EXILEDWinInstaller
 			});
 			if (MultiAdmin)
 			{
+				await WaitForUser();
 				DownloadMultiAdmin();
 			}
 			else Success();
@@ -282,7 +308,7 @@ namespace EXILEDWinInstaller
 			double bytesIn = e.BytesReceived;
 			double totalBytes = e.TotalBytesToReceive;
 			double percentage = bytesIn / totalBytes * 100;
-			dlProgressInfo.Text = $"Downloaded {e.BytesReceived}B of {e.TotalBytesToReceive}B";
+			dlProgressInfo.Text = $"Downloaded {(e.BytesReceived / 1000.0).ToString("0.000")}KB of {(e.TotalBytesToReceive / 1000.0).ToString("0.000")}KB";
 			downloadBar.Value = percentage;
 		}
 

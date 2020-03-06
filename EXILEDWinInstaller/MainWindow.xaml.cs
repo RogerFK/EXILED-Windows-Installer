@@ -16,7 +16,7 @@ namespace EXILEDWinInstaller
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private static string InstallDir = "C:\\SCP-SL-Server\\"; // defaults to this
+		private static string InstallDir = "C:\\SCP-SL Server\\"; // defaults to this
 
 		private bool mustDownload;
 		internal static DownloadWindow dlWindow;
@@ -42,19 +42,15 @@ namespace EXILEDWinInstaller
 			exiledFound = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EXILED\\EXILED.dll");
 			RefreshInstallButton();
 			Instance = this;
+			FileNameTextBox.Text = InstallDir;
 		}
 		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
 			if (dlWindow != null) return;
-			dlWindow = new DownloadWindow(MultiAdmin, InstallDir, this.testingReleaseCheckbox.IsChecked ?? false);
-			dlWindow.Show();
-			if (mustDownload)
+			if (CheckDirectory())
 			{
-				dlWindow.DownloadGame();
-			}
-			else
-			{
-				dlWindow.DownloadExiled();
+				dlWindow = new DownloadWindow(MultiAdmin, InstallDir, this.testingReleaseCheckbox.IsChecked ?? false, mustDownload);
+				dlWindow.ShowDialog();
 			}
 		}
 
@@ -178,7 +174,11 @@ namespace EXILEDWinInstaller
 					MessageBox.Show("no chiptune for u");
 					return;
 			}
+			CheckDirectory();
+		}
 
+		private bool CheckDirectory()
+		{
 			// Yeah, this installer only works locally. Use EXILED_Installer.exe if you can't use a GUI instead.
 			if (!ValidWinPath(FileNameTextBox.Text)
 				|| FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] == '.'
@@ -188,7 +188,7 @@ namespace EXILEDWinInstaller
 			{
 				MessageBox.Show("Invalid path. Please introduce a valid path\n(Example of a valid path: C:\\SCPSL\\MyServer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				FileNameTextBox.Text = InstallDir;
-				return;
+				return false;
 			}
 			if (FileNameTextBox.Text[FileNameTextBox.Text.Length - 1] != '\\')
 			{
@@ -196,7 +196,9 @@ namespace EXILEDWinInstaller
 			}
 			InstallDir = FileNameTextBox.Text;
 			RefreshInstallButton();
+			return true;
 		}
+
 		private bool ValidWinPath(string path)
 		{
 			// credit: https://stackoverflow.com/questions/24702677/regular-expression-to-match-a-valid-absolute-windows-directory-containing-spaces
