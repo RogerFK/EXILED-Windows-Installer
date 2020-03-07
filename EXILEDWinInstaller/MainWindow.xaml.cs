@@ -48,6 +48,11 @@ namespace EXILEDWinInstaller
 						shortcutButton.IsChecked = false;
 						shortcutButton.IsEnabled = false;
 						multiAdminCheckBox.IsChecked = false;
+						FileNameTextBox.IsReadOnly = true;
+						FileNameTextBox.Width = Width - (FileNameTextBox.Margin.Left * 2);
+						BrowseXButton.IsEnabled = false;
+						BrowseXButton.Content = string.Empty;
+						BrowseXButton.Visibility = Visibility.Hidden;
 						ShortcutMsg.Inlines.Clear();
 						var run = new Run("Can't create shortcuts when updating");
 						run.Foreground = new SolidColorBrush(Color.FromArgb(230, 100, 100, 100));
