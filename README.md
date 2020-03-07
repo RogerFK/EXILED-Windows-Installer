@@ -6,4 +6,4 @@ It's pretty straightforward, just click the Install EXILED button (or Update EXI
 
 It will automatically download and install everything within the `EXILED.tar.gz` file from the [latest official EXILED release](https://github.com/galaxy119/EXILED/releases/latest)
 ## Screenshot of the main page
-![lookin good ain't it](https://cdn.discordapp.com/attachments/673347615328567324/678703231739756546/unknown.png)
+![lookin good ain't it](https://i.imgur.com/ZZs6LOR.png)
