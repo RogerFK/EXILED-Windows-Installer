@@ -10,11 +10,11 @@
 		WindowStartupLocation="CenterScreen"
         Title="EXILED Installer for Windows" Height="421" Width="656" Background="#2a2a2a" Foreground="#fafafa">
 	<Grid Name ="MainGrid" Background="#2a2a2a" Margin="0,0,0,5">
-		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,255,0,0" FontSize="20" Name="FileNameTextBox"
+		<TextBox Height="32" HorizontalAlignment="Left" Margin="66,266,0,0" FontSize="20" Name="FileNameTextBox"
                  VerticalAlignment="Top" Width="393" FontWeight="DemiBold"  Text="C:\SCP-SL Server\" KeyUp="FileNameEnter"
 				 ToolTip="Press Enter to save the changes" Cursor="IBeam"/>
 		<Button Content="Browse" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a" Foreground="Azure"
-				Height="36" HorizontalAlignment="Left" Margin="476,253,0,0"
+				Height="36" HorizontalAlignment="Left" Margin="478,265,0,0"
 				Name="BrowseXButton" VerticalAlignment="Top" Width="87" FontSize="20" Click="BrowseButton" />
 		<Button x:Name="InstallButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Background="#3a3a3a"
 		HorizontalAlignment="Center"
@@ -33,7 +33,7 @@
 				<Run Foreground="Azure" FontSize="21">CC-BY-SA 3.0</Run>
 		</TextBlock>
 		<CheckBox x:Name="multiAdminCheckBox" 
-		Content="Download MultiAdmin" HorizontalAlignment="Left" Margin="66,219,0,0" VerticalAlignment="Top" 
+		Content="Download MultiAdmin" HorizontalAlignment="Left" Margin="66,202,0,0" VerticalAlignment="Top" 
 		FontSize="14" Foreground="Azure" IsChecked="True" Height="21">
 			<CheckBox.ToolTip>
 				MultiAdmin makes the server console cleaner and saves logs which will surely be useful.
@@ -41,10 +41,10 @@
 			</CheckBox.ToolTip>
 		</CheckBox>
 		<CheckBox x:Name="forceInstall" Content="Update SCP:SL Dedicated Server" HorizontalAlignment="Left" 
-		Margin="282,219,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" 
+		Margin="282,202,0,0" VerticalAlignment="Top" FontSize="14" Foreground="Azure" 
 		IsChecked="False" Height="21" Checked="CheckForceInstallToggle" Unchecked="CheckForceInstallToggle" Width="224"
 		ToolTip="Force update the server. Useful when you need to reset your files."/>
-		<CheckBox x:Name="testingReleaseCheckbox" HorizontalAlignment="Left" Margin="66,0,0,0" VerticalAlignment="Center" FontSize="14" Foreground="AntiqueWhite" Checked="TestingWarn" Height="21"
+		<CheckBox x:Name="testingReleaseCheckbox" HorizontalAlignment="Left" Margin="66,176,0,219" VerticalAlignment="Center" FontSize="14" Foreground="AntiqueWhite" Checked="TestingWarn" Height="21"
 		ToolTip="Warning: some features may be untested.">
 			<TextBlock>
 				<Run Foreground="Azure">Download latest pre-release -</Run> <Run Foreground="red">warning:</Run> <Run Foreground="LightSlateGray"> use at your own risk.</Run>
@@ -55,6 +55,14 @@
 		<Rectangle x:Name="titleBar" HorizontalAlignment="Center" Height="15" Stroke="#202020" Fill="#252525" VerticalAlignment="Top" Width="656" MouseLeftButtonDown="DragWindow"/>
 		<Image x:Name="cross" HorizontalAlignment="Right" Height="13" VerticalAlignment="Top" Width="19" RenderTransformOrigin="0.5,0.5" Source="images/unfocused_x.png" MouseEnter="FocusCross" MouseLeave="UnfocusCross" MouseDown="ExitApp" Margin="0,1,1,0"/>
 		<TextBlock x:Name="joinDiscord" HorizontalAlignment="Left" Margin="135,140,0,0" Text="Chat with us and find new plugins in our official Discord!" TextWrapping="Wrap" Foreground="#7289DA" TextDecorations="Underline" VerticalAlignment="Top" Cursor="Hand" Height="19" Width="302" MouseUp="ClickDiscordLink"/>
-		<TextBlock x:Name="rentAServer" HorizontalAlignment="Left" Margin="342,397,0,0" Text="Rent your own server in EXILED.host (starting at $4.99/mo)" TextWrapping="Wrap" Foreground="MediumPurple" TextDecorations="Underline" Cursor="Hand" VerticalAlignment="Top" Height="19" Width="313" MouseUp="RentServer"/>
+		<TextBlock x:Name="rentAServer" HorizontalAlignment="Left" Margin="357,397,0,0" Text="Rent your own server in EXILED.host (starting at $5/mo)" TextWrapping="Wrap" Foreground="MediumPurple" TextDecorations="Underline" Cursor="Hand" VerticalAlignment="Top" Height="19" Width="298" MouseUp="RentServer"/>
+		<CheckBox x:Name="shortcutButton" 
+			HorizontalAlignment="Left" Margin="66,228,0,0" VerticalAlignment="Top" 
+			FontSize="14" Foreground="Azure" IsChecked="True" Height="21">
+			<TextBlock x:Name="ShortcutMsg">
+				<Run Foreground="White">Create Shortcuts and Update file -</Run> <Run Foreground="Gray">recommended</Run>
+			</TextBlock>
+			<CheckBox.ToolTip>This is definitely a time saver: unless you're updating your server, leave this unchecked. It also adds a cool \"Update EXILED\"</CheckBox.ToolTip>
+		</CheckBox>
 	</Grid>
 </Window>

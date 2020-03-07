@@ -30,12 +30,15 @@ namespace EXILEDWinInstaller
 		private readonly bool MultiAdmin;
 		private readonly bool testing;
 		private bool userCancelling;
-		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing, bool mustDownload)
+		private readonly bool shortcuts;
+
+		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing, bool mustDownload, bool shortcuts)
 		{
 			InitializeComponent();
 			this.InstallDir = InstallDir;
 			this.MultiAdmin = MultiAdmin;
 			this.testing = testing;
+			this.shortcuts = shortcuts;
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
 			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 			if (mustDownload)
@@ -165,9 +168,7 @@ namespace EXILEDWinInstaller
 				try
 				{
 					string webPage = exiledGithub + (testing ? "" : "latest");
-					MessageBox.Show("Allah");
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webPage);
-					MessageBox.Show("Allah2");
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 					Stream stream = response.GetResponseStream();
@@ -225,18 +226,18 @@ namespace EXILEDWinInstaller
 		internal void DownloadMultiAdmin()
 		{
 			dlTitleBlock.Text = "Downloading MultiAdmin...";
-			WebClient webClient = new WebClient();
 			Dispatcher.BeginInvoke(new ThreadStart(() =>
 			{
-				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(MultiAdminDownloaded);
-
-				if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
-				{
-					Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
-				}
 				try
 				{
+					WebClient webClient = new WebClient();
+					webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+					webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(MultiAdminDownloaded);
+
+					if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
+					{
+						Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
+					}
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://github.com/Grover-c13/MultiAdmin/releases/latest");
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
@@ -263,12 +264,16 @@ namespace EXILEDWinInstaller
 
 		private async void Success()
 		{
+			dlTitleBlock.Text = "Creating shortcuts...";
+			downloadBar.Value = 66.0;
+			downloadBar.IsIndeterminate = true;
+			dlProgressInfo.Text = "This will take a little...";
+			await Task.Run(() => CreateShortcuts());
 			dlTitleBlock.Text = "Successfully installed.";
 			downloadBar.Value = 100;
 			downloadBar.IsIndeterminate = false;
 			dlProgressInfo.Text = "Installed to: " + InstallDir + "\nClosing this window in a few seconds...";
 			await Task.Delay(3000);
-			AskForShortcuts();
 			MainWindow.EndProgram(0);
 		}
 
@@ -276,7 +281,8 @@ namespace EXILEDWinInstaller
 		//		   GENERIC METHODS	       //
 		/////////////////////////////////////
 		// pretty cool, credit to: https://stackoverflow.com/a/2553245/11000333
-		public static void MoveDirectory(string source, string target)
+		// sligthly modified to make a "copy directory" routine
+		public static void MoveDirectory(string source, string target, bool copy = false)
 		{
 			var sourcePath = source.TrimEnd('\\', ' ');
 			var targetPath = target.TrimEnd('\\', ' ');
@@ -290,7 +296,8 @@ namespace EXILEDWinInstaller
 				{
 					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
 					if (File.Exists(targetFile)) File.Delete(targetFile);
-					File.Move(file, targetFile);
+					if (!copy) File.Move(file, targetFile);
+					if (copy) File.Copy(file, targetFile);
 				}
 			}
 			Directory.Delete(source, true);
@@ -394,23 +401,46 @@ namespace EXILEDWinInstaller
 			}
 		}
 
-		internal void AskForShortcuts()
+		internal void CreateShortcuts()
 		{
-			if (MessageBox.Show("Do you want to create shortcuts on your Desktop?", "Enjoy!", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+			MessageBox.Show("Whoopsie doopsie");
+			if (this.shortcuts)
 			{
 				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-				string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-				string iconDir = appdata + "\\EXILED\\EXILED.ico";
+				string iconDir = AppData + "\\EXILED\\EXILED.ico";
 				string launchIconDir = InstallDir + "EXILEDLauncher.ico";
+				string updateIconDir = AppData + "\\EXILED\\EXILED Installer\\UpdateExiled.ico";
 
 				CreateIcon(iconDir, Properties.Resources.EXILED);
 				CreateIcon(launchIconDir, Properties.Resources.EXILEDLauncher);
+				CreateIcon(updateIconDir, Properties.Resources.UpdateEXILED);
 
 				CreateLaunchBat(InstallDir);
+				CreateUpdateBat(AppData + "\\EXILED\\");
 
-				CreateShortcut("EXILED Plugin Folder", desktop, appdata + "\\Plugins\\", "Place all your plugins here.", iconDir);
-				CreateShortcut("EXILED Main Folder", desktop, appdata + "\\EXILED\\", "Configs and alike will be here.", iconDir);
+				CreateShortcut("EXILED Plugin Folder", desktop, AppData + "\\Plugins\\", "Place all your plugins here.", iconDir);
+				CreateShortcut("EXILED Main Folder", desktop, AppData + "\\EXILED\\", "Configs and alike will be here.", iconDir);
 				CreateShortcut("Launch SCPSL Server", desktop, InstallDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
+				CreateShortcut("Update SCPSL Server", desktop, AppData + "\\EXILED\\update.bat", "Update your SCP:SL Server, EXILED or MultiAdmin", updateIconDir);
+			}
+		}
+
+		private void CreateUpdateBat(string path)
+		{
+			string exiledInstallerFiles = path + "EXILED Installer\\";
+			if (!Directory.Exists(exiledInstallerFiles))
+			{
+				MoveDirectory(TmpDirectory, exiledInstallerFiles + "temp", true);
+				string updaterLocation = exiledInstallerFiles + "installer.exe";
+				if (File.Exists(updaterLocation)) File.Delete(updaterLocation);
+				File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, exiledInstallerFiles + "installer.exe");
+				File.WriteAllText(AppData + "\\EXILED\\update.bat",
+				"@echo off\n"
+					+ ":: Auto-generated by EXILED Installer for Windows.\n"
+					+ ":: We encourage you to not edit/delete this file unless you really need to.\n"
+					+ $":: You may edit the {(MultiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"
+					+ $":: {(MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe")} -yourParameter1 -yourParameter2 1234\n\n"
+					+ $"\"%~dp0EXILED Installer\\installer.exe\" -update -dir \"{InstallDir}\"");
 			}
 		}
 
@@ -418,7 +448,7 @@ namespace EXILEDWinInstaller
 		{
 			using (StreamWriter writer = new StreamWriter(path + "launch.bat"))
 			{
-				writer.Write("@echo off\n" 
+				writer.Write("@echo off\n"
 					+ ":: Auto-generated by EXILED Installer for Windows.\n"
 					+ ":: Please, don't move or remove this file or your shortcuts will malfunction.\n"
 					+ $":: You may edit the {(MultiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"

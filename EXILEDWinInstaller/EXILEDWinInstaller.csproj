@@ -151,5 +151,8 @@
   <ItemGroup>
     <None Include="images\EXILEDLauncher.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\UpdateEXILED.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

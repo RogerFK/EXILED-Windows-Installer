@@ -22,13 +22,11 @@ namespace EXILEDWinInstaller
 		internal static DownloadWindow dlWindow;
 		internal static MainWindow Instance;
 		private readonly bool exiledFound;
-		public bool MultiAdmin
+		private bool MultiAdmin
 		{
-			get
-			{
-				return multiAdminCheckBox.IsChecked ?? false;
-			}
+			get => multiAdminCheckBox.IsChecked ?? false || MultiAdminInstalled;
 		}
+		private bool MultiAdminInstalled => File.Exists(InstallDir + "MultiAdmin.exe");
 		public MainWindow()
 		{
 			// The constructor is where we check if EXILED is already installed.
@@ -37,19 +35,64 @@ namespace EXILEDWinInstaller
 				MessageBox.Show("The installer is already running.", "Already running.", MessageBoxButton.OK, MessageBoxImage.Error);
 				Application.Current.Shutdown();
 			}
+			
 			InitializeComponent();
 			InstallButton.Click += OnInstallButton;
-			exiledFound = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EXILED\\EXILED.dll");
+			exiledFound = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EXILED\\EXILED.dll"); 
+			string[] args = Environment.GetCommandLineArgs();
+			for (int i = 0; i < args.Length; i++)
+			{
+				switch (args[i])
+				{
+					case "-update":
+						shortcutButton.IsChecked = false;
+						shortcutButton.IsEnabled = false;
+						multiAdminCheckBox.IsChecked = false;
+						ShortcutMsg.Inlines.Clear();
+						var run = new Run("Can't create shortcuts when updating");
+						run.Foreground = new SolidColorBrush(Color.FromArgb(230, 100, 100, 100));
+						ShortcutMsg.Inlines.Add(run);
+						break;
+					case "-dir":
+						i++;
+						if (i >= args.Length)
+						{
+							MessageBox.Show("Parameter for -dir not found.\nUsage: -dir \"C:\\My Server Folder\"",
+											"No directory", MessageBoxButton.OK, MessageBoxImage.Error);
+							break;
+						}
+						string tmpDir = args[i];
+						FileNameTextBox.Text = tmpDir.Trim('"', '\'');
+						if (CheckDirectory())
+						{
+							InstallDir = FileNameTextBox.Text;
+						}
+						break;
+				}
+			}
+			FileNameTextBox.Text = InstallDir; 
+			
 			RefreshInstallButton();
+			RefreshMultiAdminText();
 			Instance = this;
-			FileNameTextBox.Text = InstallDir;
 		}
+
+		private void RefreshMultiAdminText()
+		{
+			if (MultiAdminInstalled)
+			{
+				multiAdminCheckBox.Content = "Update MultiAdmin";
+			}
+			else multiAdminCheckBox.Content = "Download MultiAdmin";
+		}
+
 		private void OnInstallButton(object sender, RoutedEventArgs e)
 		{
 			if (dlWindow != null) return;
 			if (CheckDirectory())
 			{
-				dlWindow = new DownloadWindow(MultiAdmin, InstallDir, this.testingReleaseCheckbox.IsChecked ?? false, mustDownload);
+				dlWindow = new DownloadWindow(MultiAdmin, InstallDir, 
+					testingReleaseCheckbox.IsChecked ?? false, mustDownload, shortcutButton.IsChecked ?? false);
 				dlWindow.ShowDialog();
 			}
 		}
