@@ -40,14 +40,21 @@ namespace EXILEDWinInstaller
 			this.testing = testing;
 			this.shortcuts = shortcuts;
 			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
-			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-			if (mustDownload)
+			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).TrimEnd('\\');
+			try
 			{
-				DownloadGame();
+				if (mustDownload)
+				{
+					DownloadGame();
+				}
+				else
+				{
+					DownloadExiled();
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				DownloadExiled();
+				MessageBox.Show("Send this error in #support, and ping RogerFK: \n" + ex, "Unexpected error!");
 			}
 		}
 		/////////////////////////////////////
@@ -274,7 +281,12 @@ namespace EXILEDWinInstaller
 			downloadBar.IsIndeterminate = false;
 			dlProgressInfo.Text = "Installed to: " + InstallDir + "\nClosing this window in a few seconds...";
 			await Task.Delay(3000);
-			MainWindow.EndProgram(0);
+			if (MessageBox.Show("Enjoy your new EXILED server!\nDon't forget to join us on Discord! Do you want to join our Discord now?", "Installed succesfully!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+			{
+				try { Process.Start(@"https://discord.gg/PyUkWTg"); }
+				catch { Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg"); }
+			}
+			Application.Current.Shutdown(0);
 		}
 
 		/////////////////////////////////////
@@ -297,7 +309,7 @@ namespace EXILEDWinInstaller
 					var targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
 					if (File.Exists(targetFile)) File.Delete(targetFile);
 					if (!copy) File.Move(file, targetFile);
-					if (copy) File.Copy(file, targetFile);
+					else if (copy) File.Copy(file, targetFile);
 				}
 			}
 			Directory.Delete(source, true);
@@ -403,24 +415,49 @@ namespace EXILEDWinInstaller
 
 		internal void CreateShortcuts()
 		{
-			if (this.shortcuts)
+			if (shortcuts)
 			{
 				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 				string iconDir = AppData + "\\EXILED\\EXILED.ico";
 				string launchIconDir = InstallDir + "EXILEDLauncher.ico";
 				string updateIconDir = AppData + "\\EXILED\\EXILED Installer\\UpdateExiled.ico";
-
-				CreateIcon(iconDir, Properties.Resources.EXILED);
-				CreateIcon(launchIconDir, Properties.Resources.EXILEDLauncher);
-				CreateIcon(updateIconDir, Properties.Resources.UpdateEXILED);
-
-				CreateLaunchBat(InstallDir);
-				CreateUpdateBat(AppData + "\\EXILED\\");
-
-				CreateShortcut("EXILED Plugin Folder", desktop, AppData + "\\Plugins\\", "Place all your plugins here.", iconDir);
-				CreateShortcut("EXILED Main Folder", desktop, AppData + "\\EXILED\\", "Configs and alike will be here.", iconDir);
-				CreateShortcut("Launch SCPSL Server", desktop, InstallDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
-				CreateShortcut("Update SCPSL Server", desktop, AppData + "\\EXILED\\update.bat", "Update your SCP:SL Server, EXILED or MultiAdmin", updateIconDir);
+				try
+				{
+					CreateIcon(iconDir, Properties.Resources.EXILED);
+					CreateIcon(launchIconDir, Properties.Resources.EXILEDLauncher);
+					CreateIcon(updateIconDir, Properties.Resources.UpdateEXILED);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error while creating the icons (send this to RogerFK!): " + ex);
+				}
+				try
+				{
+					CreateLaunchBat(InstallDir);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error while creating the launch.bat file (send this to RogerFK!): " + ex);
+				}
+				try
+				{
+					CreateUpdateBat(AppData + "\\EXILED\\");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error while creating the update.bat file (send this to RogerFK!): " + ex);
+				}
+				try
+				{
+					CreateShortcut("EXILED Plugin Folder", desktop, AppData + "\\Plugins\\", "Place all your plugins here.", iconDir);
+					CreateShortcut("EXILED Main Folder", desktop, AppData + "\\EXILED\\", "Configs and alike will be here.", iconDir);
+					CreateShortcut("Launch SCPSL Server", desktop, InstallDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
+					CreateShortcut("Update SCPSL Server", desktop, AppData + "\\EXILED\\update.bat", "Update your SCP:SL Server, EXILED or MultiAdmin", updateIconDir);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error while creating the Desktop shortcuts (send this to RogerFK!): " + ex);
+				}
 			}
 		}
 
@@ -456,7 +493,6 @@ namespace EXILEDWinInstaller
 					+ "cd /D %~dp0\n"
 					+ (MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe"));
 				writer.Close();
-				writer.Dispose();
 			}
 		}
 

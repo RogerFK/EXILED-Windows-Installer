@@ -78,7 +78,6 @@ namespace EXILEDWinInstaller
 			FileNameTextBox.Text = InstallDir; 
 			
 			RefreshInstallButton();
-			RefreshMultiAdminText();
 			Instance = this;
 		}
 
@@ -150,6 +149,7 @@ namespace EXILEDWinInstaller
 				mustDownload = forceInstall.IsChecked ?? false;
 			}
 			ChangeText(mustDownload);
+			RefreshMultiAdminText();
 		}
 		private void ChangeText(bool download)
 		{
