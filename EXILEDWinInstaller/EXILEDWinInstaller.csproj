@@ -149,10 +149,10 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\EXILEDLauncher.ico" />
+    <Resource Include="images\EXILEDLauncher.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\UpdateEXILED.ico" />
+    <Resource Include="images\UpdateEXILED.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
