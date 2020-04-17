@@ -421,6 +421,9 @@ namespace EXILEDWinInstaller
 				string iconDir = AppData + "\\EXILED\\EXILED.ico";
 				string launchIconDir = InstallDir + "EXILEDLauncher.ico";
 				string updateIconDir = AppData + "\\EXILED\\EXILED Installer\\UpdateExiled.ico";
+				if(!Directory.Exists(AppData + "\\EXILED\\EXILED Installer\\")) {
+					Directory.CreateDirectory(AppData + "\\EXILED\\EXILED Installer\\");
+				}
 				try
 				{
 					CreateIcon(iconDir, Properties.Resources.EXILED);
