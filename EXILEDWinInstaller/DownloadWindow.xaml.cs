@@ -23,25 +23,29 @@ namespace EXILEDWinInstaller
 	/// </summary>
 	public partial class DownloadWindow : Window
 	{
-		private const string steamCmd = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
-		private const string exiledGithub = "https://github.com/galaxy119/EXILED/releases/";
-		static public string TmpDirectory;
-		public string AppData;
-		private string InstallDir;
-		private readonly bool MultiAdmin;
+		const string STEAMCMD_DOWNLOAD_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
+		const string EXILED_DOWNLOAD_URL = "https://github.com/galaxy119/EXILED/releases/";
+		const string MULTIADMIN_DOWNLOAD_URL = "https://github.com/ServerMod/MultiAdmin/releases/latest";
+
+		public static string tempPath = Directory.GetCurrentDirectory() + "\\temp\\";
+		public static string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).TrimEnd('\\');
+
+		private readonly bool multiAdmin;
 		private readonly bool testing;
-		private bool userCancelling;
 		private readonly bool shortcuts;
 
-		public DownloadWindow(bool MultiAdmin, string InstallDir, bool testing, bool mustDownload, bool shortcuts)
+		private string installDir;
+		private bool userCancelling;
+
+		public DownloadWindow(bool multiAdmin, string installDir, bool testing, bool mustDownload, bool shortcuts)
 		{
 			InitializeComponent();
-			this.InstallDir = InstallDir;
-			this.MultiAdmin = MultiAdmin;
+
+			this.installDir = installDir;
+			this.multiAdmin = multiAdmin;
 			this.testing = testing;
 			this.shortcuts = shortcuts;
-			TmpDirectory = Directory.GetCurrentDirectory() + "\\temp\\";
-			AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).TrimEnd('\\');
+
 			try
 			{
 				if (mustDownload)
@@ -58,6 +62,7 @@ namespace EXILEDWinInstaller
 				MessageBox.Show("Send this error in #support, and ping RogerFK: \n" + ex, "Unexpected error!");
 			}
 		}
+
 		/////////////////////////////////////
 		//			 UI ELEMENTS		   //
 		/////////////////////////////////////
@@ -88,18 +93,18 @@ namespace EXILEDWinInstaller
 			{
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(SteamCmdDownloaded);
-				if (!Directory.Exists(TmpDirectory + "\\steamcmd\\"))
+				if (!Directory.Exists(tempPath + "\\steamcmd\\"))
 				{
-					Directory.CreateDirectory(TmpDirectory + "\\steamcmd\\");
+					Directory.CreateDirectory(tempPath + "\\steamcmd\\");
 				}
 				else
 				{
-					if (File.Exists(TmpDirectory + "\\steamcmd\\steamcmd.exe"))
+					if (File.Exists(tempPath + "\\steamcmd\\steamcmd.exe"))
 					{
 						InstallSCPSL();
 						return;
 					}
-					else if (File.Exists(TmpDirectory + "\\steamcmd\\steamcmd.zip"))
+					else if (File.Exists(tempPath + "\\steamcmd\\steamcmd.zip"))
 					{
 						SteamCmdDownloaded();
 						return;
@@ -108,7 +113,7 @@ namespace EXILEDWinInstaller
 
 				try
 				{
-					webClient.DownloadFileAsync(new Uri(steamCmd), TmpDirectory + "\\steamcmd\\steamcmd.zip");
+					webClient.DownloadFileAsync(new Uri(STEAMCMD_DOWNLOAD_URL), tempPath + "\\steamcmd\\steamcmd.zip");
 				}
 				catch (Exception ex)
 				{
@@ -116,6 +121,7 @@ namespace EXILEDWinInstaller
 				}
 			}));
 		}
+
 		private async Task WaitForUser()
 		{
 			while (userCancelling)
@@ -125,6 +131,7 @@ namespace EXILEDWinInstaller
 				await Task.Delay(50);
 			}
 		}
+
 		async void SteamCmdDownloaded(object sender = null, AsyncCompletedEventArgs e = null)
 		{
 			await WaitForUser();
@@ -132,7 +139,7 @@ namespace EXILEDWinInstaller
 			dlProgressInfo.Text = "This may take a while... Please, don't close the SteamCMD windows.";
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
-			await Task.Run(() => ZipFile.ExtractToDirectory(TmpDirectory + "\\steamcmd\\steamcmd.zip", TmpDirectory + "\\steamcmd\\"));
+			await Task.Run(() => ZipFile.ExtractToDirectory(tempPath + "\\steamcmd\\steamcmd.zip", tempPath + "\\steamcmd\\"));
 			InstallSCPSL();
 		}
 
@@ -142,18 +149,18 @@ namespace EXILEDWinInstaller
 			await Task.Run(() =>
 			{
 				// Just entering SteamCMD updates it.
-				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+quit");
+				Process process = Process.Start(tempPath + "\\steamcmd\\steamcmd.exe", $"+quit");
 				process.WaitForExit();
 			});
 			await WaitForUser();
-			dlTitleBlock.Text = "Installing SCP:SL to " + InstallDir;
-			if (!Directory.Exists(InstallDir))
+			dlTitleBlock.Text = "Installing SCP:SL to " + installDir;
+			if (!Directory.Exists(installDir))
 			{
-				Directory.CreateDirectory(InstallDir);
+				Directory.CreateDirectory(installDir);
 			}
 			await Task.Run(() =>
 			{
-				Process process = Process.Start(TmpDirectory + "\\steamcmd\\steamcmd.exe", $"+login anonymous \"+force_install_dir \\\"{InstallDir}\\\"\" +app_update 996560 +quit");
+				Process process = Process.Start(tempPath + "\\steamcmd\\steamcmd.exe", $"+login anonymous \"+force_install_dir \\\"{installDir}\\\"\" +app_update 996560 +quit");
 				process.WaitForExit();
 			});
 			await WaitForUser();
@@ -169,13 +176,13 @@ namespace EXILEDWinInstaller
 			{
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(ExiledDownloaded);
-				if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
+				if (!Directory.Exists(tempPath + "\\EXILED\\"))
 				{
-					Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
+					Directory.CreateDirectory(tempPath + "\\EXILED\\");
 				}
 				try
 				{
-					string webPage = exiledGithub + (testing ? "" : "latest");
+					string webPage = EXILED_DOWNLOAD_URL + (testing ? "" : "latest");
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webPage);
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
@@ -185,9 +192,9 @@ namespace EXILEDWinInstaller
 					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 					string thing = readArray.FirstOrDefault(s => s.Contains("EXILED.tar.gz"));
 					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/EXILED.tar.gz");
-					string path = $"{exiledGithub}download/{sub}/EXILED.tar.gz";
+					string path = $"{EXILED_DOWNLOAD_URL}download/{sub}/EXILED.tar.gz";
 
-					webClient.DownloadFileAsync(new Uri(path), TmpDirectory + "EXILED.tar.gz");
+					webClient.DownloadFileAsync(new Uri(path), tempPath + "EXILED.tar.gz");
 				}
 				catch (Exception ex)
 				{
@@ -205,18 +212,18 @@ namespace EXILEDWinInstaller
 			downloadBar.IsIndeterminate = true;
 			downloadBar.Value = 30;
 
-			await Task.Run(() => ExtractTarGz(TmpDirectory + "EXILED.tar.gz", TmpDirectory + "\\EXILED\\"));
+			await Task.Run(() => ExtractTarGz(tempPath + "EXILED.tar.gz", tempPath + "\\EXILED\\"));
 			await WaitForUser();
 
-			File.Delete(TmpDirectory + "EXILED.tar.gz");
+			File.Delete(tempPath + "EXILED.tar.gz");
 			dlTitleBlock.Text = "Installing EXILED...";
 			await Task.Run(() =>
 			{
 				try
 				{
-					string EXILEDtmp = TmpDirectory + "EXILED\\";
-					SafeMove("Assembly-CSharp.dll", EXILEDtmp, InstallDir + "SCPSL_Data\\Managed\\");
-					MoveDirectory(EXILEDtmp, AppData);
+					string EXILEDtmp = tempPath + "EXILED\\";
+					SafeMove("Assembly-CSharp.dll", EXILEDtmp, installDir + "SCPSL_Data\\Managed\\");
+					MoveDirectory(EXILEDtmp, appDataPath);
 				}
 				catch (Exception ex)
 				{
@@ -224,13 +231,14 @@ namespace EXILEDWinInstaller
 					Application.Current.Shutdown();
 				}
 			});
-			if (MultiAdmin)
+			if (multiAdmin)
 			{
 				await WaitForUser();
 				DownloadMultiAdmin();
 			}
 			else Success();
 		}
+
 		internal void DownloadMultiAdmin()
 		{
 			dlTitleBlock.Text = "Downloading MultiAdmin...";
@@ -241,12 +249,11 @@ namespace EXILEDWinInstaller
 					WebClient webClient = new WebClient();
 					webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 					webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(MultiAdminDownloaded);
-
-					if (!Directory.Exists(TmpDirectory + "\\EXILED\\"))
+					if (!Directory.Exists(tempPath + "\\EXILED\\"))
 					{
-						Directory.CreateDirectory(TmpDirectory + "\\EXILED\\");
+						Directory.CreateDirectory(tempPath + "\\EXILED\\");
 					}
-					HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://github.com/Grover-c13/MultiAdmin/releases/latest");
+					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MULTIADMIN_DOWNLOAD_URL);
 					HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 					Stream stream = response.GetResponseStream();
@@ -254,11 +261,11 @@ namespace EXILEDWinInstaller
 					string read = reader.ReadToEnd();
 					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 					string thing = readArray.FirstOrDefault(s => s.Contains("MultiAdmin.exe"));
-					string sub = Between(thing, "Grover-c13/MultiAdmin/releases/download/", "/MultiAdmin.exe");
-					string path = "https://" + $"github.com/Grover-c13/MultiAdmin/releases/download/{sub}/MultiAdmin.exe";
-					if (File.Exists(InstallDir + "MultiAdmin.exe")) File.Delete(InstallDir + "MultiAdmin.exe");
+					string sub = Between(thing, "ServerMod/MultiAdmin/releases/download/", "/MultiAdmin.exe");
+					string path = "https://" + $"github.com/ServerMod/MultiAdmin/releases/download/{sub}/MultiAdmin.exe";
+					if (File.Exists(installDir + "MultiAdmin.exe")) File.Delete(installDir + "MultiAdmin.exe");
 
-					webClient.DownloadFileAsync(new Uri(path), InstallDir + "MultiAdmin.exe");
+					webClient.DownloadFileAsync(new Uri(path), installDir + "MultiAdmin.exe");
 				}
 				catch (Exception ex)
 				{
@@ -280,12 +287,12 @@ namespace EXILEDWinInstaller
 			dlTitleBlock.Text = "Successfully installed.";
 			downloadBar.Value = 100;
 			downloadBar.IsIndeterminate = false;
-			dlProgressInfo.Text = "Installed to: " + InstallDir + "\nClosing this window in a few seconds...";
+			dlProgressInfo.Text = "Installed to: " + installDir + "\nClosing this window in a few seconds...";
 			await Task.Delay(3000);
 			if (MessageBox.Show("Enjoy your new EXILED server!\nDon't forget to join us on Discord! Do you want to join our Discord now?", "Installed succesfully!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 			{
-				try { Process.Start(@"https://discord.gg/PyUkWTg"); }
-				catch { Process.Start("explorer.exe", @"https://discord.gg/PyUkWTg"); }
+				try { Process.Start("https://discord.gg/PyUkWTg"); }
+				catch { Process.Start("explorer.exe", "https://discord.gg/PyUkWTg"); }
 			}
 			Application.Current.Shutdown(0);
 		}
@@ -328,7 +335,7 @@ namespace EXILEDWinInstaller
 			double bytesIn = e.BytesReceived;
 			double totalBytes = e.TotalBytesToReceive;
 			double percentage = bytesIn / totalBytes * 100;
-			dlProgressInfo.Text = $"Downloaded {(e.BytesReceived / 1000.0).ToString("0.000")}KB of {(e.TotalBytesToReceive / 1000.0).ToString("0.000")}KB";
+			dlProgressInfo.Text = $"Downloaded {(e.BytesReceived / 1000.0):0.000}KB of {(e.TotalBytesToReceive / 1000.0):0.000)}KB";
 			downloadBar.Value = percentage;
 		}
 
@@ -419,11 +426,11 @@ namespace EXILEDWinInstaller
 			if (shortcuts)
 			{
 				string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-				string iconDir = AppData + "\\EXILED\\EXILED.ico";
-				string launchIconDir = InstallDir + "EXILEDLauncher.ico";
-				string updateIconDir = AppData + "\\EXILED\\EXILED Installer\\UpdateExiled.ico";
-				if(!Directory.Exists(AppData + "\\EXILED\\EXILED Installer\\")) {
-					Directory.CreateDirectory(AppData + "\\EXILED\\EXILED Installer\\");
+				string iconDir = appDataPath + "\\EXILED\\EXILED.ico";
+				string launchIconDir = installDir + "EXILEDLauncher.ico";
+				string updateIconDir = appDataPath + "\\EXILED\\EXILED Installer\\UpdateExiled.ico";
+				if(!Directory.Exists(appDataPath + "\\EXILED\\EXILED Installer\\")) {
+					Directory.CreateDirectory(appDataPath + "\\EXILED\\EXILED Installer\\");
 				}
 				try
 				{
@@ -437,7 +444,7 @@ namespace EXILEDWinInstaller
 				}
 				try
 				{
-					CreateLaunchBat(InstallDir);
+					CreateLaunchBat(installDir);
 				}
 				catch (Exception ex)
 				{
@@ -445,7 +452,7 @@ namespace EXILEDWinInstaller
 				}
 				try
 				{
-					CreateUpdateBat(AppData + "\\EXILED\\");
+					CreateUpdateBat(appDataPath + "\\EXILED\\");
 				}
 				catch (Exception ex)
 				{
@@ -453,10 +460,10 @@ namespace EXILEDWinInstaller
 				}
 				try
 				{
-					CreateShortcut("EXILED Plugin Folder", desktop, AppData + "\\Plugins\\", "Place all your plugins here.", iconDir);
-					CreateShortcut("EXILED Main Folder", desktop, AppData + "\\EXILED\\", "Configs and alike will be here.", iconDir);
-					CreateShortcut("Launch SCPSL Server", desktop, InstallDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
-					CreateShortcut("Update SCPSL Server", desktop, AppData + "\\EXILED\\update.bat", "Update your SCP:SL Server, EXILED or MultiAdmin", updateIconDir);
+					CreateShortcut("EXILED Plugin Folder", desktop, appDataPath + "\\Plugins\\", "Place all your plugins here.", iconDir);
+					CreateShortcut("EXILED Main Folder", desktop, appDataPath + "\\EXILED\\", "Configs and alike will be here.", iconDir);
+					CreateShortcut("Launch SCPSL Server", desktop, installDir + "launch.bat", "Launch your SCP:SL Server", launchIconDir);
+					CreateShortcut("Update SCPSL Server", desktop, appDataPath + "\\EXILED\\update.bat", "Update your SCP:SL Server, EXILED or MultiAdmin", updateIconDir);
 				}
 				catch (Exception ex)
 				{
@@ -470,18 +477,18 @@ namespace EXILEDWinInstaller
 			string exiledInstallerFiles = path + "EXILED Installer\\";
 			if (!Directory.Exists(exiledInstallerFiles))
 			{
-				MoveDirectory(TmpDirectory, exiledInstallerFiles + "temp", true);
+				MoveDirectory(tempPath, exiledInstallerFiles + "temp", true);
 				string updaterLocation = exiledInstallerFiles + "installer.exe";
 				if (File.Exists(updaterLocation)) File.Delete(updaterLocation);
 				File.Copy(System.Reflection.Assembly.GetExecutingAssembly().Location, exiledInstallerFiles + "installer.exe");
-				if (File.Exists(AppData + "\\EXILED\\update.bat")) File.Delete(AppData + "\\EXILED\\update.bat");
-				File.WriteAllText(AppData + "\\EXILED\\update.bat",
+				if (File.Exists(appDataPath + "\\EXILED\\update.bat")) File.Delete(appDataPath + "\\EXILED\\update.bat");
+				File.WriteAllText(appDataPath + "\\EXILED\\update.bat",
 				"@echo off\n"
 					+ ":: Auto-generated by EXILED Installer for Windows.\n"
 					+ ":: We encourage you to not edit/delete this file unless you really need to.\n"
-					+ $":: You may edit the {(MultiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"
-					+ $":: {(MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe")} -yourParameter1 -yourParameter2 1234\n\n"
-					+ $"\"%~dp0EXILED Installer\\installer.exe\" -update -dir \"{InstallDir}\"");
+					+ $":: You may edit the {(multiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"
+					+ $":: {(multiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe")} -yourParameter1 -yourParameter2 1234\n\n"
+					+ $"\"%~dp0EXILED Installer\\installer.exe\" -update -dir \"{installDir}\"");
 			}
 		}
 
@@ -492,10 +499,10 @@ namespace EXILEDWinInstaller
 				writer.Write("@echo off\n"
 					+ ":: Auto-generated by EXILED Installer for Windows.\n"
 					+ ":: Please, don't move or remove this file or your shortcuts will malfunction.\n"
-					+ $":: You may edit the {(MultiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"
-					+ $":: {(MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe")} -yourParameter1 -yourParameter2 1234\n\n"
+					+ $":: You may edit the {(multiAdmin ? "MultiAdmin" : "LocalAdmin")} input parameters like so:\n"
+					+ $":: {(multiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe")} -yourParameter1 -yourParameter2 1234\n\n"
 					+ "cd /D %~dp0\n"
-					+ (MultiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe"));
+					+ (multiAdmin ? "MultiAdmin.exe" : "LocalAdmin.exe"));
 				writer.Close();
 			}
 		}
