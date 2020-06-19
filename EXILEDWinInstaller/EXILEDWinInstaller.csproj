@@ -1,66 +1,78 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
-    <PropertyGroup>
-        <AssemblyName>EXILEDWinInstaller</AssemblyName>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net46</TargetFramework>
-        <UseWPF>true</UseWPF>
-        <PlatformTarget>x64</PlatformTarget>
-    </PropertyGroup>
+	<PropertyGroup>
+		<AssemblyName>EXILEDWinInstaller</AssemblyName>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net46</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AssemblyTitle>EXILED Installer for Windows</AssemblyTitle>
-        <ApplicationIcon>EXILED.ico</ApplicationIcon>
-        <Copyright>CC-BY-SA 3.0</Copyright>
-        <Description>A GUI installer for SCP: Secret Laboratory, which includes the EXILED's modding framework.</Description>
-    </PropertyGroup>
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AssemblyTitle>EXILED Installer for Windows</AssemblyTitle>
+		<ApplicationIcon>images\EXILED.ico</ApplicationIcon>
+		<Copyright>CC-BY-SA 3.0</Copyright>
+		<Description>A GUI installer for SCP: Secret Laboratory, which includes the EXILED's modding framework.</Description>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <Compile Remove="images\**" />
-        <EmbeddedResource Remove="images\**" />
-        <None Remove="images\**" />
-        <Page Remove="images\**" />
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="images\**" />
+		<EmbeddedResource Remove="images\**" />
+		<None Remove="images\**" />
+		<Page Remove="images\**" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <None Remove="EXILED.ico" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
-    </ItemGroup>
+	<ItemGroup>
+		<Reference Include="System" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Drawing" />
+		<Reference Include="System.IO.Compression.FileSystem" />
+		<Reference Include="System.Windows.Forms" />
+		<Reference Include="System.Xml" />
+		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="System.Net.Http" />
+		<Reference Include="System.Xaml">
+			<RequiredTargetFramework>4.0</RequiredTargetFramework>
+		</Reference>
+		<Reference Include="WindowsBase" />
+		<Reference Include="PresentationCore" />
+		<Reference Include="PresentationFramework" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="System.IO.Compression.FileSystem" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xml" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Xml.Linq" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="System.Net.Http" />
-        <Reference Include="System.Xaml">
-            <RequiredTargetFramework>4.0</RequiredTargetFramework>
-        </Reference>
-        <Reference Include="WindowsBase" />
-        <Reference Include="PresentationCore" />
-        <Reference Include="PresentationFramework" />
-    </ItemGroup>
+	<ItemGroup>
+		<COMReference Include="IWshRuntimeLibrary">
+			<Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+			<VersionMajor>1</VersionMajor>
+			<VersionMinor>0</VersionMinor>
+			<Lcid>0</Lcid>
+			<WrapperTool>tlbimp</WrapperTool>
+			<Isolated>False</Isolated>
+			<EmbedInteropTypes>True</EmbedInteropTypes>
+			<Private>false</Private>
+		</COMReference>
+	</ItemGroup>
 
-    <ItemGroup>
-        <COMReference Include="IWshRuntimeLibrary">
-            <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
-            <VersionMajor>1</VersionMajor>
-            <VersionMinor>0</VersionMinor>
-            <Lcid>0</Lcid>
-            <WrapperTool>tlbimp</WrapperTool>
-            <Isolated>False</Isolated>
-            <EmbedInteropTypes>True</EmbedInteropTypes>
-        </COMReference>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>
