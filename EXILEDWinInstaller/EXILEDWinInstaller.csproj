@@ -75,4 +75,10 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Resource Include="images\EXILED.png" />
+		<Resource Include="images\focused_x.png" />
+		<Resource Include="images\unfocused_x.png" />
+	</ItemGroup>
+
 </Project>
