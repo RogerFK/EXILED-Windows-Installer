@@ -288,7 +288,7 @@ namespace EXILEDWinInstaller
 			}
 			try
 			{
-				File.Create(upmostParentFolder + "test.txt");
+				File.Create(upmostParentFolder + "test.txt").Dispose();
 				File.Delete(upmostParentFolder + "test.txt");
 			} catch 
 			{
