@@ -87,10 +87,10 @@ namespace EXILEDWinInstaller
 		/////////////////////////////////////
 		internal void DownloadGame()
 		{
-			WebClient webClient = new WebClient();
 			dlTitleBlock.Text = "Downloading SteamCMD...";
 			Dispatcher.BeginInvoke(new ThreadStart(() =>
 			{
+				WebClient webClient = new WebClient();
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(SteamCmdDownloaded);
 				if (!Directory.Exists(tempPath + "\\steamcmd\\"))
@@ -171,9 +171,9 @@ namespace EXILEDWinInstaller
 		{
 			dlTitleBlock.Text = "Downloading EXILED...";
 			dlProgressInfo.Text = "This will take a second...";
-			WebClient webClient = new WebClient();
 			Dispatcher.BeginInvoke(new ThreadStart(() =>
 			{
+				WebClient webClient = new WebClient();
 				webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
 				webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(ExiledDownloaded);
 				if (!Directory.Exists(tempPath + "\\EXILED\\"))
@@ -190,8 +190,8 @@ namespace EXILEDWinInstaller
 					StreamReader reader = new StreamReader(stream);
 					string read = reader.ReadToEnd();
 					string[] readArray = read.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-					string thing = readArray.FirstOrDefault(s => s.Contains("EXILED.tar.gz"));
-					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/EXILED.tar.gz");
+					string thing = readArray.FirstOrDefault(s => s.Contains("Exiled.tar.gz"));
+					string sub = Between(thing, "/galaxy119/EXILED/releases/download/", "/Exiled.tar.gz");
 					string path = $"{EXILED_DOWNLOAD_URL}download/{sub}/EXILED.tar.gz";
 
 					webClient.DownloadFileAsync(new Uri(path), tempPath + "EXILED.tar.gz");
@@ -228,7 +228,7 @@ namespace EXILEDWinInstaller
 				catch (Exception ex)
 				{
 					MessageBox.Show("Error while installing EXILED\n(Notify us in #support in our Discord with a screenshot)" + ex.ToString());
-					Application.Current.Shutdown();
+					this.Close();
 				}
 			});
 			if (multiAdmin)
